@@ -1,0 +1,35 @@
+{
+  "name": "niivue-web",
+  "version": "0.0.0",
+  "description": "The niivue web app",
+  "author": "Taylor Hanayik <hanayik@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "src/web.js",
+  "directories": {
+    "src": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@fontsource/roboto": "^4.5.1",
+    "@mui/icons-material": "^5.3.1",
+    "@mui/material": "^5.3.1",
+    "@niivue/niivue": "^0.30.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^1.0.7",
+    "vite": "^2.7.2"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "niivue-desktop",
+  "version": "0.0.0",
+  "description": "The niivue desktop app",
+  "author": "Taylor Hanayik <hanayik@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "src/desktop.js",
+  "directories": {
+    "src": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node ./__tests__/desktop.test.js"
+  }
+}

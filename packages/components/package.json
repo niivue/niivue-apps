@@ -1,0 +1,19 @@
+{
+  "name": "niivue-components",
+  "version": "0.0.0",
+  "description": "The individual components that make up niivue apps",
+  "author": "Taylor Hanayik <hanayik@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "src/components.js",
+  "directories": {
+    "src": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node ./__tests__/components.test.js"
+  }
+}

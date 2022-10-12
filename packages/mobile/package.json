@@ -1,0 +1,19 @@
+{
+  "name": "niivue-mobile",
+  "version": "0.0.0",
+  "description": "The niivue mobile apps",
+  "author": "Taylor Hanayik <hanayik@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "src/mobile.js",
+  "directories": {
+    "src": "src",
+    "test": "__tests__"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node ./__tests__/mobile.test.js"
+  }
+}
