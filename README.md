@@ -13,12 +13,12 @@ A monorepo for NiiVue applications (desktop, web, mobile).
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/en/) (at lest the latest LTS version)
+- [Node.js](https://nodejs.org/en/) (at least the latest LTS version)
 
 ### Setup
 
 ```bash
-git clone 
+git clone git@github.com:niivue/niivue-apps.git
 cd niivue-apps
 npm run bootstrap
 ```
