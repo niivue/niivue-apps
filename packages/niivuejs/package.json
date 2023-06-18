@@ -1,0 +1,24 @@
+{
+  "name": "niivuejs",
+  "version": "0.0.1",
+  "description": "> TODO: description",
+  "author": "Taylor Hanayik <hanayik@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "type": "module",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "test": "node ./__tests__/niivuejs.test.js",
+    "docs": "jsdoc -c jsdoc.json -d docs"
+  },
+  "devDependencies": {
+    "jsdoc": "^4.0.2"
+  }
+}
