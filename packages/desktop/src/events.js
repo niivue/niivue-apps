@@ -21,12 +21,13 @@ async function onGetCommsInfo() {
  * Handles the openFileDialog command.
  * @async
  * @function
+ * @param {Array} filters - An array of objects with name and extensions properties.
+ * @see https://www.electronjs.org/docs/latest/api/dialog#dialogshowopendialogbrowserwindow-options
  * @returns {Promise<Object>} A promise that resolves to an object with, cancelled, filePaths, and bookmarks properties.
  */
-async function onFileDialog() {
+async function onFileDialog(filters=[]) {
     const { dialog } = require('electron')
-    const result = await dialog.showOpenDialog({ properties: ['openFile'] })
-    console.log(result)
+    const result = await dialog.showOpenDialog({filters:filters, properties: ['openFile', 'multiSelections'] })
     return result
 }
 

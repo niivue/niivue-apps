@@ -4,6 +4,25 @@ const { fork } = require("child_process");
 const {devPorts} = require('./devPorts');
 const {events} = require('./events');
 
+const nvVolumeFilters = [
+  { name: 'Volume types', extensions: [
+    'nii',
+    'nii.gz',
+    'mih',
+    'mif',
+    'nrrd',
+    'nhdr',
+    'mhd',
+    'mha',
+    'mgh',
+    'mgz',
+    'v',
+    'v16',
+    'vmr',
+    'HEAD', // afni HEAD/BRIK
+    ] 
+  }
+];
 let mainWindow = {};
 
 // launch the fileServer as a background process
@@ -142,6 +161,57 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
+/**
+ * Updates the images menu with the specified files.
+ * @param {string[]} files - The files to add to the images menu.
+ * @function
+ * @returns {undefined}
+ * @example
+ * updateImagesMenu(['file1.nii.gz', 'file2.nii.gz']);
+ * // adds file1.nii.gz and file2.nii.gz to the images menu
+ */
+function updateImagesMenu(files) {
+  let appMenu = Menu.getApplicationMenu();
+  let imagesMenu = appMenu.getMenuItemById('images');
+  imagesMenu.submenu = [];
+  imagesMenu.submenu.clear();
+  for (let i = 0; i < files.length; i++) {
+    imagesMenu.submenu.append(new MenuItem({
+      label: files[i],
+      id: `image-${i}`,
+      click: () => {
+        console.log(`setActiveImage ${i}`)
+        //mainWindow.webContents.send('setActiveImage', i);
+      }
+    }));
+  }
+
+  Menu.setApplicationMenu(appMenu)
+}
+
+/**
+ * Handles the load volumes menu click event.
+ * @returns {string[]} The files selected by the user.
+ * @async
+ * @function
+ * @example
+ * onLoadVolumesClick();
+ * // opens a file dialog and returns the selected files
+ * // also sends a loadVolumes message to the main window
+ * // and updates the images menu
+ * // if the user selects file1.nii.gz and file2.nii.gz
+ * // the function returns ['file1.nii.gz', 'file2.nii.gz']
+ * // and the images menu is updated with file1.nii.gz and file2.nii.gz
+ * // and the main window receives a loadVolumes message with ['file1.nii.gz', 'file2.nii.gz']
+ */
+async function onLoadVolumesClick() {
+  let files = await events.openFileDialog(filters=nvVolumeFilters);
+  mainWindow.webContents.send('loadVolumes', files.filePaths);
+  updateImagesMenu(files.filePaths);
+}
+
+
+
 // create an application menu
 let menu = [
   // add file menu with load volumes option
@@ -152,24 +222,7 @@ let menu = [
         label: 'Load volumes',
         id: 'loadVolumes',
         click: async () => {
-          let files = await events.openFileDialog();
-          mainWindow.webContents.send('loadVolumes', files.filePaths);
-          // TODO: break this menu stuff out into a separate function
-          let appMenu = Menu.getApplicationMenu();
-          let imagesMenu = appMenu.getMenuItemById('images');
-          imagesMenu.submenu = [];
-          imagesMenu.submenu.clear();
-          for (let i = 0; i < files.filePaths.length; i++) {
-            imagesMenu.submenu.append(new MenuItem({
-              label: files.filePaths[i],
-              id: `image-${i}`,
-              click: () => {
-                console.log(`setActiveImage ${i}`)
-                // mainWindow.webContents.send('setActiveImage', i);
-              }
-            }));
-          }
-          Menu.setApplicationMenu(appMenu)
+          await onLoadVolumesClick();
         }
       }
     ]
