@@ -4,6 +4,12 @@ const { fork } = require("child_process");
 const {devPorts} = require('./devPorts');
 const {events} = require('./events');
 
+/**
+ * the filters for the volume file dialog
+ * @type {Array<Object>}
+ * @property {string} name - The name of the filter.
+ * @property {Array<string>} extensions - The extensions for the filter.
+ */
 const nvVolumeFilters = [
   { name: 'Volume types', extensions: [
     'nii',
@@ -23,8 +29,53 @@ const nvVolumeFilters = [
     ] 
   }
 ];
+
+/**
+ * The filters for the surface file dialog.
+ * @type {Array<Object>}
+ * @property {string} name - The name of the filter.
+ * @property {Array<string>} extensions - The extensions for the filter.
+ */
+const nvSurfaceFilters = [
+  { name: 'Surface types', extensions: [
+    'gz',
+    'jcon',
+    'json',
+    'tck',
+    'trk',
+    'trx',
+    'tract',
+    'gii',
+    'mz3',  
+    'asc',
+    'dfs',
+    'byu',
+    'geo',
+    'ico',
+    'off',
+    'nv',
+    'obj',
+    'ply',
+    'x3d',
+    'fib',
+    'vtk',
+    'srf',
+    'stl'
+    ]
+  }
+];
+
+/**
+ * the main window object
+ * @type {Electron.BrowserWindow}
+ */
 let mainWindow = {};
 
+/**
+ * the fileServer object (a forked process)
+ * @type {ChildProcess}
+ * @see https://nodejs.org/api/child_process.html#child_process_child_process_fork_modulepath_args_options
+ */
 // launch the fileServer as a background process
 fileServer = fork(
   path.join(__dirname, "fileServer.js"),
@@ -43,6 +94,14 @@ function onFileServerPort(port) {
 }
 
 // handler function for the fileServer port message
+/**
+ * Handles messages from the fileServer.
+ * @param {Object} message - The message object.
+ * @param {string} message.type - The type of message.
+ * @param {string} message.value - The value of the message.
+ * @returns {undefined}
+ * @function
+ */
 function handleFileServerMessage(message) {
   // msg is expected to be a JSON object (automatically serialized and deserialized by process.send and 'message')
   // a message object has a 'type' and a 'value' as properties
@@ -71,6 +130,9 @@ function isDev() {
 
 /**
  * Registers IPC listeners for the events object.
+ * @returns {undefined}
+ * @function
+ * @see https://www.electronjs.org/docs/api/ipc-main
  */
 function registerIpcListeners() {
   for (const [key, value] of Object.entries(events)) {
@@ -161,6 +223,7 @@ app.on('window-all-closed', () => {
   app.quit();
 });
 
+
 /**
  * Updates the images menu with the specified files.
  * @param {string[]} files - The files to add to the images menu.
@@ -190,6 +253,18 @@ function updateImagesMenu(files) {
 }
 
 /**
+ * Gets the list of images in the images menu.
+ * @returns {string[]} The list of images in the images menu.
+ * @function
+ */
+function getImageMenuList() {
+  let appMenu = Menu.getApplicationMenu();
+  let imagesMenu = appMenu.getMenuItemById('images');
+  // get just the labels as an array
+  return imagesMenu.submenu.items.map((item) => item.label);
+}
+
+/**
  * Handles the load volumes menu click event.
  * @returns {string[]} The files selected by the user.
  * @async
@@ -210,6 +285,31 @@ async function onLoadVolumesClick() {
   updateImagesMenu(files.filePaths);
 }
 
+/**
+ * Handles the load surfaces menu click event.
+ * @async
+ * @function
+ */
+async function onLoadSurfacesClick() {
+  let files = await events.openFileDialog(filters=nvSurfaceFilters);
+  mainWindow.webContents.send('loadSurfaces', files.filePaths);
+  updateImagesMenu(files.filePaths);
+}
+
+/**
+ * Handles the add volume overlay menu click event.
+ * @async
+ * @function
+ */
+async function onAddVolumeOverlayClick() {
+  let files = await events.openFileDialog(filters=nvVolumeFilters);
+  // send just the first file to the main window, since we only want to add one overlay at a time
+  mainWindow.webContents.send('addVolumeOverlay', files.filePaths[0]);
+  let currentImages = getImageMenuList();
+  // prepend the new files to the current images
+  updateImagesMenu(files.filePaths.concat(currentImages));
+}
+
 
 
 // create an application menu
@@ -218,13 +318,41 @@ let menu = [
   {
     label: 'File',
     submenu: [
+      // load volumes
       {
         label: 'Load volumes',
         id: 'loadVolumes',
         click: async () => {
           await onLoadVolumesClick();
         }
-      }
+      },
+      // load surfaces
+      {
+        label: 'Load surfaces',
+        id: 'loadSurfaces',
+        click: async () => {
+          await onLoadSurfacesClick();
+        }
+      },
+      // separator
+      { type: 'separator' },
+      // add volume overlay
+      {
+        label: 'Add volume overlay',
+        id: 'addVolumeOverlay',
+        click: async () => {
+          await onAddVolumeOverlayClick();
+        }
+      },
+      // add surface overlay
+      // TODO: this should prob be a separate submenu on each surface item to add mesh overlays
+      // {
+      //   label: 'Add surface overlay',
+      //   id: 'addSurfaceOverlay',
+      //   click: async () => {
+      //     await onAddSurfaceOverlayClick();
+      //   }
+      // },
     ]
   },
   // Images menu

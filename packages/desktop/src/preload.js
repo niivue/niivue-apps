@@ -10,12 +10,28 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   openSaveFileDialog: openSaveFileDialog,
   getCommsInfo: getCommsInfo,
   onLoadVolumes: onLoadVolumes,
+  onLoadSurfaces: onLoadSurfaces,
+  onAddVolumeOverlay: onAddVolumeOverlay,
 })
 
 async function onLoadVolumes(callback) {
   ipcRenderer.on('loadVolumes', (event, volumes) => {
     console.log(volumes)
     callback(volumes)
+  })
+}
+
+async function onLoadSurfaces(callback) {
+  ipcRenderer.on('loadSurfaces', (event, surfaces) => {
+    console.log(surfaces)
+    callback(surfaces)
+  })
+}
+
+async function onAddVolumeOverlay(callback) {
+  ipcRenderer.on('addVolumeOverlay', (event, overlay) => {
+    console.log(overlay)
+    callback(overlay)
   })
 }
 

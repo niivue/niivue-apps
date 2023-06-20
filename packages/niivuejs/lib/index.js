@@ -90,6 +90,18 @@ niivuejs.onLoadVolumes = function (callback){
     }
 }
 
+niivuejs.onLoadSurfaces = function (callback){
+    if (isFunction(NIIVUE.onLoadSurfaces)) {
+        NIIVUE.onLoadSurfaces(callback);
+    }
+}
+
+niivuejs.onAddVolumeOverlay = function (callback){
+    if (isFunction(NIIVUE.onAddVolumeOverlay)) {
+        NIIVUE.onAddVolumeOverlay(callback);
+    }
+}
+
 niivuejs.webGL2Supported = async function (){
     let canvas = document.createElement('canvas');
     let gl = canvas.getContext('webgl2');
