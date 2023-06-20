@@ -9,4 +9,7 @@ export default defineConfig({
   },
   // make all paths relative
   base: './',
+  build: {
+    outDir: '../desktop/src/packaged_ui',
+  }
 })

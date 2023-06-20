@@ -203,8 +203,10 @@ function createWindow(guiName="niivue") {
     mainWindow.webContents.openDevTools();
   } else {
     // get user home directory
-    const homeDir = app.getPath('home');
-    mainWindow.loadFile(path.join(homeDir, '.niivuegui', guiName, 'index.html'));
+    // const homeDir = app.getPath('home');
+    // load the index.html of the app
+    mainWindow.loadFile(path.join(__dirname, 'packaged_ui', 'index.html'));
+    //mainWindow.loadFile(path.join(homeDir, '.niivuegui', guiName, 'index.html'));
   }
 };
 

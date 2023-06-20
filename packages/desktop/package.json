@@ -8,7 +8,7 @@
     "dev": "electron-forge start -- --dev",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "build": "electron-forge make",
     "lint": "echo \"No linting configured\""
   },
   "keywords": [],
@@ -20,7 +20,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "electron-squirrel-startup": "^1.0.0",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "niivue": "*"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.1.1",

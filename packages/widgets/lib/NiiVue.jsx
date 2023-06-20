@@ -96,6 +96,8 @@ export function NiiVue({volumes, surfaces,  ...props }){
             // set the callback for when the view is changed from the menu bar
             niivuejs.onSetView((view) => {
                 console.log('set view', view);
+                // clear the mosaic string
+                nv.setSliceMosaicString("");
                 if (view === 'multiPlanarACSR') {
                     nv.opts.multiplanarForceRender = true;
                 } else if (view === 'mosaic') {
