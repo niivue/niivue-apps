@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import { useRef, useEffect, useState } from 'react';
-import {Niivue} from '@niivue/niivue'
+import {Niivue, SLICE_TYPE} from '@niivue/niivue'
 import {niivuejs} from 'niivuejs'
 
 function onLocationChange(location) {
@@ -52,6 +52,14 @@ export function NiiVue({volumes, surfaces,  ...props }){
 
     useEffect(() => {
         if(nv){
+            const sliceTypes = {
+                'axial': SLICE_TYPE.AXIAL,
+                'coronal': SLICE_TYPE.CORONAL,
+                'sagittal': SLICE_TYPE.SAGITTAL,
+                'multiPlanarACS': SLICE_TYPE.MULTIPLANAR,
+                'render': SLICE_TYPE.RENDER
+            }
+
             // set the callback for when volumes are loaded
             niivuejs.onLoadVolumes((imgs) => {
                 console.log('loaded volumes', imgs);
@@ -84,6 +92,28 @@ export function NiiVue({volumes, surfaces,  ...props }){
                 console.log(imageToLoad);
                 // append the new image to the existing images
                 nv.addVolumeFromUrl(imageToLoad);
+            });
+            // set the callback for when the view is changed from the menu bar
+            niivuejs.onSetView((view) => {
+                console.log('set view', view);
+                if (view === 'multiPlanarACSR') {
+                    nv.opts.multiplanarForceRender = true;
+                } else if (view === 'mosaic') {
+                    // TODO: allow the user to set the mosaic string
+                    nv.setSliceMosaicString("A 0 20 C 30 S 42");
+                    nv.opts.multiplanarForceRender = false;
+                } else {
+                    nv.opts.multiplanarForceRender = false;
+                }
+                nv.setSliceType(sliceTypes[view]);
+            });
+
+            niivuejs.onSetFrame((frame) => {
+                console.log('set frame', frame);
+                let vol = nv.volumes[0];
+                let id = vol.id;
+                let currentFrame = vol.frame4D
+                nv.setFrame4D(id, currentFrame + frame);
             });
         }
     }, [nv]);

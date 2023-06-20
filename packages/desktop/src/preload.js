@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   onLoadVolumes: onLoadVolumes,
   onLoadSurfaces: onLoadSurfaces,
   onAddVolumeOverlay: onAddVolumeOverlay,
+  onSetView: onSetView,
+  onSetFrame: onSetFrame,
 })
 
 async function onLoadVolumes(callback) {
@@ -32,6 +34,21 @@ async function onAddVolumeOverlay(callback) {
   ipcRenderer.on('addVolumeOverlay', (event, overlay) => {
     console.log(overlay)
     callback(overlay)
+  })
+}
+
+async function onSetView(callback) {
+  ipcRenderer.on('setView', (event, view) => {
+    console.log(view)
+    callback(view)
+  })
+}
+
+async function onSetFrame(callback) {
+  // frame is 1 or -1 for next or previous frame
+  ipcRenderer.on('setFrame', (event, frame) => {
+    console.log(frame)
+    callback(frame)
   })
 }
 
