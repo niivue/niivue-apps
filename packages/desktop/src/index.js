@@ -252,6 +252,19 @@ function updateImagesMenu(files) {
   Menu.setApplicationMenu(appMenu)
 }
 
+function appendImageToMenu(file) {
+  let appMenu = Menu.getApplicationMenu();
+  let imagesMenu = appMenu.getMenuItemById('images');
+  imagesMenu.submenu.append(new MenuItem({
+    label: file,
+    id: `image-${imagesMenu.submenu.items.length}`,
+    click: () => {
+      console.log(`setActiveImage ${imagesMenu.submenu.items.length}`)
+    }
+  }));
+  Menu.setApplicationMenu(appMenu)
+}
+
 /**
  * Gets the list of images in the images menu.
  * @returns {string[]} The list of images in the images menu.
@@ -261,7 +274,14 @@ function getImageMenuList() {
   let appMenu = Menu.getApplicationMenu();
   let imagesMenu = appMenu.getMenuItemById('images');
   // get just the labels as an array
-  return imagesMenu.submenu.items.map((item) => item.label);
+  let menuItems = imagesMenu.submenu.items.map((item) => {
+    return item.id === 'noImages' ? null : item.label;
+  });
+  // remove nulls
+  menuItems = menuItems.filter((item) => {
+    return item !== null;
+  });
+  return menuItems;
 }
 
 /**
@@ -305,12 +325,21 @@ async function onAddVolumeOverlayClick() {
   let files = await events.openFileDialog(filters=nvVolumeFilters);
   // send just the first file to the main window, since we only want to add one overlay at a time
   mainWindow.webContents.send('addVolumeOverlay', files.filePaths[0]);
-  let currentImages = getImageMenuList();
+  //let currentImages = getImageMenuList();
   // prepend the new files to the current images
-  updateImagesMenu(files.filePaths.concat(currentImages));
+  // updateImagesMenu(files.filePaths.concat(currentImages));
+  appendImageToMenu(files.filePaths[0]);
 }
 
-
+/**
+ * Sets the canvas view to the specified view.
+ * @param {string} view - The view to set the canvas to.
+ * @async
+ * @function
+ */
+async function onSetViewClick(view) {
+  mainWindow.webContents.send('setView', view);
+}
 
 // create an application menu
 let menu = [
@@ -358,8 +387,94 @@ let menu = [
   // Images menu
   {
     label: 'Images',
-    submenu: [{label: 'No images loaded'}],
+    submenu: [{label: 'No images loaded', id: 'noImages'}],
     id: 'images'
+  },
+  // add view menu with view options
+  {
+    label: 'View',
+    submenu: [
+      {
+        label: 'Render',
+        id: 'renderView',
+        click: async () => {
+          onSetViewClick('render');
+        },
+        type: 'radio',
+        // set accelerator to to option+r
+        accelerator: 'Option+R'
+      },
+      {
+        label: 'Axial',
+        id: 'axialView',
+        click: async () => {
+          onSetViewClick('axial');
+        },
+        type: 'radio',
+        accelerator: 'Option+A'
+      },
+      {
+        label: 'Sagittal',
+        id: 'sagittalView',
+        click: async () => {
+          onSetViewClick('sagittal');
+        },
+        type: 'radio',
+        accelerator: 'Option+S'
+      },
+      {
+        label: 'Coronal',
+        id: 'coronalView',
+        click: async () => {
+          onSetViewClick('coronal');
+        },
+        type: 'radio',
+        accelerator: 'Option+C'
+      },
+      {
+        label: 'Multi-planar (A+C+S)',
+        id: 'multiPlanarViewACS',
+        click: async () => {
+          onSetViewClick('multiPlanarACS');
+        },
+        type: 'radio',
+        accelerator: 'Option+M'
+      },
+      {
+        label: 'Multi-planar (A+C+S+R)',
+        id: 'multiPlanarViewACSR',
+        click: async () => {
+          onSetViewClick('multiPlanarACSR');
+        },
+        type: 'radio',
+        accelerator: 'Option+Shift+M'
+      },
+      {
+        label: 'Mosaic',
+        id: 'mosaicView',
+        click: async () => {
+          onSetViewClick('mosaic');
+        },
+        type: 'radio',
+        accelerator: 'Option+O'
+      },
+      {
+        label: 'Next frame',
+        id: 'nextFrame',
+        click: async () => {
+          mainWindow.webContents.send('setFrame', 1);
+        },
+        accelerator: 'Right'
+      },
+      {
+        label: 'Previous frame',
+        id: 'previousFrame',
+        click: async () => {
+          mainWindow.webContents.send('setFrame', -1);
+        },
+        accelerator: 'Left'
+      }
+    ]
   },
   // add window menu with reload options
   {

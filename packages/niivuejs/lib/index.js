@@ -102,6 +102,18 @@ niivuejs.onAddVolumeOverlay = function (callback){
     }
 }
 
+niivuejs.onSetView = function (callback){
+    if (isFunction(NIIVUE.onSetView)) {
+        NIIVUE.onSetView(callback);
+    }
+}
+
+niivuejs.onSetFrame = function (callback){
+    if (isFunction(NIIVUE.onSetFrame)) {
+        NIIVUE.onSetFrame(callback);
+    }
+}
+
 niivuejs.webGL2Supported = async function (){
     let canvas = document.createElement('canvas');
     let gl = canvas.getContext('webgl2');
