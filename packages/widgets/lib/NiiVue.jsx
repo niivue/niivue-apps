@@ -18,9 +18,10 @@ function onLocationChange(location) {
  * images='[{"url":"http://localhost:<port>/file?filename=/path/to/file.nii.gz","name":"file.nii.gz"}]'
  * />
  */
-export function NiiVue({images,  ...props }){
+export function NiiVue({volumes, surfaces,  ...props }){
     const [nv, setNv] = useState(null);
-    const [nvImages, setNvImages] = useState(images);
+    const [nvImages, setNvImages] = useState(volumes);
+    const [nvSurfaces, setNvSurfaces] = useState(surfaces);
     const [commsInfo, setCommsInfo] = useState(null);
     // get a reference to the canvas element
     const canvas = useRef(null);
@@ -51,6 +52,7 @@ export function NiiVue({images,  ...props }){
 
     useEffect(() => {
         if(nv){
+            // set the callback for when volumes are loaded
             niivuejs.onLoadVolumes((imgs) => {
                 console.log('loaded volumes', imgs);
                 let imagesToLoad = imgs.map((image) => {
@@ -60,6 +62,28 @@ export function NiiVue({images,  ...props }){
                     }
                 });
                 setNvImages(JSON.stringify(imagesToLoad));
+            });
+            // set the callback for when surfaces are loaded
+            niivuejs.onLoadSurfaces((surfs) => {
+                console.log('loaded surfaces', surfs);
+                let surfacesToLoad = surfs.map((surf) => {
+                    return {
+                        url: makeUrl(surf),
+                        name: surf,
+                    }
+                });
+                setNvSurfaces(JSON.stringify(surfacesToLoad));
+            });
+            // set the callback for when volume overlays are loaded
+            niivuejs.onAddVolumeOverlay((img) => {
+                console.log('added volume overlay', img);
+                let imageToLoad = {
+                    url: makeUrl(img),
+                    name: img,
+                };
+                console.log(imageToLoad);
+                // append the new image to the existing images
+                nv.addVolumeFromUrl(imageToLoad);
             });
         }
     }, [nv]);
@@ -81,6 +105,15 @@ export function NiiVue({images,  ...props }){
             nv.loadVolumes(parsedImages);
         }
     }, [nv, nvImages]);
+
+    // load the surfaces when the surfaces prop changes
+    useEffect(() => {
+        if(nv && nvSurfaces){
+            let parsedSurfaces = JSON.parse(nvSurfaces);
+            console.log('loading surfaces', parsedSurfaces);
+            nv.loadMeshes(parsedSurfaces);
+        }
+    }, [nv, nvSurfaces]);
 
     // if webgl2 is not supported, return null (nothing will be rendered)
     if (!niivuejs.webGL2Supported()) {
