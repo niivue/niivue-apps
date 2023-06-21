@@ -72,6 +72,24 @@ export function NiiVue({volumes, surfaces,  ...props }){
                 }
             });
 
+            niivuejs.onSetDragMode((mode) => {
+                console.log('set drag mode', mode);
+                switch(mode) {
+                    case 'pan':
+                        nv.opts.dragMode = nv.dragModes.pan
+                        break;
+                    case 'contrast':
+                        nv.opts.dragMode = nv.dragModes.contrast
+                        break;
+                    case 'measure':
+                        nv.opts.dragMode = nv.dragModes.measurement
+                        break;
+                    case 'none':
+                        nv.opts.dragMode = nv.dragModes.none
+                        break;
+                }
+            });
+
             // set the callback for when volumes are loaded
             niivuejs.onLoadVolumes((imgs) => {
                 console.log('loaded volumes', imgs);
