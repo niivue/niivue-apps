@@ -4,7 +4,6 @@ import {Niivue, SLICE_TYPE} from '@niivue/niivue'
 import {niivuejs} from 'niivuejs'
 
 function onLocationChange(location) {
-    console.log(location);
     document.title = location.string;
 }
 
@@ -32,12 +31,12 @@ export function NiiVue({volumes, surfaces,  ...props }){
     // create a new Niivue object
     // initialize the Niivue object when the component mounts
     useEffect(() => {
-        async function getCommsInfo(){
+        async function runAsyncStartupFuncs(){
             let info = await niivuejs.getCommsInfo()
             console.log(info)
             setCommsInfo(info)
         }
-        getCommsInfo()
+        runAsyncStartupFuncs()
         if (niivuejs.webGL2Supported()) {
             console.log('initializing niivue');
             let nv = new Niivue({
@@ -59,6 +58,19 @@ export function NiiVue({volumes, surfaces,  ...props }){
                 'multiPlanarACS': SLICE_TYPE.MULTIPLANAR,
                 'render': SLICE_TYPE.RENDER
             }
+
+            niivuejs.onSetColormaps((colormap) => {
+                let name = colormap.name;
+                let cmap = colormap.colormap;
+                // loop through the nv.volumes to find the volume with the matching name
+                for(let i = 0; i < nv.volumes.length; i++){
+                    if(nv.volumes[i].name === name){
+                        nv.volumes[i].colormap = cmap;
+                        nv.updateGLVolume();
+                        return;
+                    }
+                }
+            });
 
             // set the callback for when volumes are loaded
             niivuejs.onLoadVolumes((imgs) => {
@@ -96,6 +108,8 @@ export function NiiVue({volumes, surfaces,  ...props }){
             // set the callback for when the view is changed from the menu bar
             niivuejs.onSetView((view) => {
                 console.log('set view', view);
+                // clear the mosaic string
+                nv.setSliceMosaicString("");
                 if (view === 'multiPlanarACSR') {
                     nv.opts.multiplanarForceRender = true;
                 } else if (view === 'mosaic') {

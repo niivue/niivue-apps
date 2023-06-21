@@ -1,6 +1,7 @@
 module.exports = {
   packagerConfig: {
     ignore: "(.git|.vscode|node_modules|docs|dist|.gitignore|README.md|LICENSE.md)",
+    icon: "./niivue",
   },
   rebuildConfig: {},
   makers: [
