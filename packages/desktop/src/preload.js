@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   onAddVolumeOverlay: onAddVolumeOverlay,
   onSetView: onSetView,
   onSetFrame: onSetFrame,
+  onSetColormaps: onSetColormaps
 })
 
 async function onLoadVolumes(callback) {
@@ -60,6 +61,15 @@ async function onSetFrame(callback) {
  */
 async function getCommsInfo() {
   return ipcRenderer.invoke('getCommsInfo')
+}
+
+
+async function onSetColormaps(callback) {
+  // colormapObj has the keys: name, colormap
+  ipcRenderer.on('setColormaps', (event, colormapObj) => {
+    console.log(colormapObj)
+    callback(colormapObj)
+  })
 }
 
 

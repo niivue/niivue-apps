@@ -114,7 +114,13 @@ niivuejs.onSetFrame = function (callback){
     }
 }
 
-niivuejs.webGL2Supported = async function (){
+niivuejs.onSetColormaps = function (callback){
+    if (isFunction(NIIVUE.onSetColormaps)) {
+        NIIVUE.onSetColormaps(callback);
+    }
+}
+
+niivuejs.webGL2Supported = function (){
     let canvas = document.createElement('canvas');
     let gl = canvas.getContext('webgl2');
     let supported = gl !== null;

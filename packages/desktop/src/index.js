@@ -4,6 +4,73 @@ const { fork } = require("child_process");
 const {devPorts} = require('./devPorts');
 const {events} = require('./events');
 
+const colormaps = [
+  "ROI_i256",
+  "actc",
+  "afni_blues_inv",
+  "afni_reds_inv",
+  "bcgwhw",
+  "bcgwhw_dark",
+  "blue",
+  "blue2cyan",
+  "blue2magenta",
+  "blue2red",
+  "bluegrn",
+  "bone",
+  "bronze",
+  "cet_l17",
+  "cividis",
+  "cool",
+  "copper",
+  "copper2",
+  "ct_airways",
+  "ct_artery",
+  "ct_bones",
+  "ct_brain",
+  "ct_brain_gray",
+  "ct_cardiac",
+  "ct_head",
+  "ct_kidneys",
+  "ct_liver",
+  "ct_muscles",
+  "ct_scalp",
+  "ct_skull",
+  "ct_soft",
+  "ct_soft_tissue",
+  "ct_surface",
+  "ct_vessels",
+  "ct_w_contrast",
+  "cubehelix",
+  "electric_blue",
+  "freesurfer",
+  "ge_color",
+  "gold",
+  "gray",
+  "green",
+  "green2cyan",
+  "green2orange",
+  "hot",
+  "hotiron",
+  "hsv",
+  "inferno",
+  "jet",
+  "linspecer",
+  "magma",
+  "mako",
+  "nih",
+  "plasma",
+  "random",
+  "red",
+  "redyell",
+  "rocket",
+  "surface",
+  "turbo",
+  "violet",
+  "viridis",
+  "warm",
+  "winter",
+  "x_rain"
+]
 /**
  * the filters for the volume file dialog
  * @type {Array<Object>}
@@ -247,7 +314,8 @@ function updateImagesMenu(files) {
       click: () => {
         console.log(`setActiveImage ${i}`)
         //mainWindow.webContents.send('setActiveImage', i);
-      }
+      },
+      submenu: createColormapsMenu(files[i])
     }));
   }
 
@@ -262,9 +330,24 @@ function appendImageToMenu(file) {
     id: `image-${imagesMenu.submenu.items.length}`,
     click: () => {
       console.log(`setActiveImage ${imagesMenu.submenu.items.length}`)
-    }
+    },
+    // add the colormaps submenu to choose a colormap
+    submenu: createColormapsMenu(file)
   }));
   Menu.setApplicationMenu(appMenu)
+}
+
+function createColormapsMenu(label){
+  // create a new submenu for the colormaps
+  const submenu = new Menu()
+  // add the colormaps to the submenu
+  for (let j = 0; j < colormaps.length; j++) {
+    const colormap = colormaps[j]
+    submenu.append(new MenuItem({label: colormap, type: 'radio', click: () => {
+      mainWindow.webContents.send('setColormaps', {colormap: colormap, name: label})
+    }}))
+  }
+  return submenu
 }
 
 /**
