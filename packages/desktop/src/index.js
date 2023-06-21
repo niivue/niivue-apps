@@ -561,6 +561,44 @@ let menu = [
       }
     ]
   },
+  // add drag menu
+  {
+    label: 'Drag',
+    submenu: [
+      {
+        label: 'Pan/zoom',
+        id: 'panzoom',
+        click: () => {
+          mainWindow.webContents.send('setDragMode', 'pan');
+        },
+        type: 'radio'
+      },
+      {
+        label: 'Measure',
+        id: 'measure',
+        click: () => {
+          mainWindow.webContents.send('setDragMode', 'measure');
+        },
+        type: 'radio'
+      },
+      {
+        label: 'Window/level', // contrast
+        id: 'windowlevel',
+        click: () => {
+          mainWindow.webContents.send('setDragMode', 'contrast');
+        },
+        type: 'radio'
+      },
+      {
+        label: 'None',
+        id: 'none',
+        click: () => {
+          mainWindow.webContents.send('setDragMode', 'none');
+        },
+        type: 'radio'
+      }
+    ]
+  },
   // add window menu with reload options
   {
     label: 'Window',

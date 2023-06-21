@@ -14,7 +14,8 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   onAddVolumeOverlay: onAddVolumeOverlay,
   onSetView: onSetView,
   onSetFrame: onSetFrame,
-  onSetColormaps: onSetColormaps
+  onSetColormaps: onSetColormaps,
+  onSetDragMode: onSetDragMode,
 })
 
 async function onLoadVolumes(callback) {
@@ -50,6 +51,13 @@ async function onSetFrame(callback) {
   ipcRenderer.on('setFrame', (event, frame) => {
     console.log(frame)
     callback(frame)
+  })
+}
+
+function onSetDragMode(callback) {
+  ipcRenderer.on('setDragMode', (event, dragMode) => {
+    console.log(dragMode)
+    callback(dragMode)
   })
 }
 

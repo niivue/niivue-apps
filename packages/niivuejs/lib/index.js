@@ -108,6 +108,12 @@ niivuejs.onSetView = function (callback){
     }
 }
 
+niivuejs.onSetDragMode = function (callback){
+    if (isFunction(NIIVUE.onSetDragMode)) {
+        NIIVUE.onSetDragMode(callback);
+    }
+}
+
 niivuejs.onSetFrame = function (callback){
     if (isFunction(NIIVUE.onSetFrame)) {
         NIIVUE.onSetFrame(callback);
