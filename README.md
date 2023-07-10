@@ -20,7 +20,7 @@ A monorepo for NiiVue applications (desktop, web, mobile).
 ```bash
 git clone git@github.com:niivue/niivue-apps.git
 cd niivue-apps
-npm run bootstrap
+npm install
 ```
 
 ### Dev workflow
