@@ -195,6 +195,19 @@ function isDev() {
   return process.argv[2] === '--dev';
 }
 
+function logProps(obj) {
+  for(const prop in obj) {
+    console.log(prop + ' = ' + obj[prop]);
+  }
+}
+
+function handleSetViewRadioButton(event, selectedView) {
+  const views = ['axialView', 'coronalView', 'sagittalView', 'multiPlanarViewACS', 'renderView']
+  let appMenu = Menu.getApplicationMenu();
+  let viewMenu = appMenu.getMenuItemById(views[selectedView]);  
+  viewMenu.checked = true;
+}
+
 /**
  * Registers IPC listeners for the events object.
  * @returns {undefined}
@@ -217,6 +230,8 @@ function registerIpcListeners() {
     }
     ipcMain.handle(key, handler);
   }
+
+  ipcMain.handle('setViewRadioButton', handleSetViewRadioButton);
 }
 
 /**
@@ -467,7 +482,7 @@ let menu = [
       //     await onAddSurfaceOverlayClick();
       //   }
       // },
-    ]
+    ],
   },
   // Images menu
   {
@@ -559,7 +574,8 @@ let menu = [
         },
         accelerator: 'Left'
       }
-    ]
+    ],
+    id: 'views'
   },
   // add drag menu
   {

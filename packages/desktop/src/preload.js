@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   onSetFrame: onSetFrame,
   onSetColormaps: onSetColormaps,
   onSetDragMode: onSetDragMode,
+  onSetViewSelected: onSetViewSelected
 })
 
 async function onLoadVolumes(callback) {
@@ -44,6 +45,10 @@ async function onSetView(callback) {
     console.log(view)
     callback(view)
   })
+}
+
+async function onSetViewSelected(view) {
+  return ipcRenderer.invoke('setViewRadioButton', view);
 }
 
 async function onSetFrame(callback) {
