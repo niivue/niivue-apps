@@ -586,6 +586,7 @@ let menu = [
         },
         type: "radio",
         accelerator: "Option+Shift+M",
+        checked: true
       },
       {
         label: "Mosaic",
