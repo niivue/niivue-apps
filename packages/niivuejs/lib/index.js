@@ -135,8 +135,8 @@ niivuejs.webGL2Supported = function () {
   return supported;
 };
 
-niivuejs.onSetViewSelected = function (view) {
+niivuejs.onSetViewSelected = function (view, forceRender = false, mosaic = '') {
   if (isFunction(NIIVUE.onSetViewSelected)) {
-    NIIVUE.onSetViewSelected(view);
+    NIIVUE.onSetViewSelected(view, forceRender, mosaic);
   }
 };

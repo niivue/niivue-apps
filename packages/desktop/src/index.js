@@ -1,8 +1,8 @@
-const { app, BrowserWindow, Menu, MenuItem, ipcMain} = require('electron');
-const path = require('path');
+const { app, BrowserWindow, Menu, MenuItem, ipcMain } = require("electron");
+const path = require("path");
 const { fork } = require("child_process");
-const {devPorts} = require('./devPorts');
-const {events} = require('./events');
+const { devPorts } = require("./devPorts");
+const { events } = require("./events");
 
 const colormaps = [
   "ROI_i256",
@@ -69,8 +69,8 @@ const colormaps = [
   "viridis",
   "warm",
   "winter",
-  "x_rain"
-]
+  "x_rain",
+];
 /**
  * the filters for the volume file dialog
  * @type {Array<Object>}
@@ -78,23 +78,25 @@ const colormaps = [
  * @property {Array<string>} extensions - The extensions for the filter.
  */
 const nvVolumeFilters = [
-  { name: 'Volume types', extensions: [
-    'nii',
-    'nii.gz',
-    'mih',
-    'mif',
-    'nrrd',
-    'nhdr',
-    'mhd',
-    'mha',
-    'mgh',
-    'mgz',
-    'v',
-    'v16',
-    'vmr',
-    'HEAD', // afni HEAD/BRIK
-    ] 
-  }
+  {
+    name: "Volume types",
+    extensions: [
+      "nii",
+      "nii.gz",
+      "mih",
+      "mif",
+      "nrrd",
+      "nhdr",
+      "mhd",
+      "mha",
+      "mgh",
+      "mgz",
+      "v",
+      "v16",
+      "vmr",
+      "HEAD", // afni HEAD/BRIK
+    ],
+  },
 ];
 
 /**
@@ -104,32 +106,34 @@ const nvVolumeFilters = [
  * @property {Array<string>} extensions - The extensions for the filter.
  */
 const nvSurfaceFilters = [
-  { name: 'Surface types', extensions: [
-    'gz',
-    'jcon',
-    'json',
-    'tck',
-    'trk',
-    'trx',
-    'tract',
-    'gii',
-    'mz3',  
-    'asc',
-    'dfs',
-    'byu',
-    'geo',
-    'ico',
-    'off',
-    'nv',
-    'obj',
-    'ply',
-    'x3d',
-    'fib',
-    'vtk',
-    'srf',
-    'stl'
-    ]
-  }
+  {
+    name: "Surface types",
+    extensions: [
+      "gz",
+      "jcon",
+      "json",
+      "tck",
+      "trk",
+      "trx",
+      "tract",
+      "gii",
+      "mz3",
+      "asc",
+      "dfs",
+      "byu",
+      "geo",
+      "ico",
+      "off",
+      "nv",
+      "obj",
+      "ply",
+      "x3d",
+      "fib",
+      "vtk",
+      "srf",
+      "stl",
+    ],
+  },
 ];
 
 /**
@@ -144,10 +148,9 @@ let mainWindow = {};
  * @see https://nodejs.org/api/child_process.html#child_process_child_process_fork_modulepath_args_options
  */
 // launch the fileServer as a background process
-fileServer = fork(
-  path.join(__dirname, "fileServer.js"),
-  { env: { FORK: true } }
-);
+fileServer = fork(path.join(__dirname, "fileServer.js"), {
+  env: { FORK: true },
+});
 
 /**
  * handles setting the process env variables for the fileServer port and host
@@ -157,7 +160,7 @@ fileServer = fork(
  */
 function onFileServerPort(port) {
   process.env.NIIVUE_FILESERVER_PORT = port;
-  process.env.NIIVUE_HOST = 'localhost';
+  process.env.NIIVUE_HOST = "localhost";
 }
 
 // handler function for the fileServer port message
@@ -182,7 +185,6 @@ fileServer.on("message", (message) => {
   handleFileServerMessage(message);
 });
 
-
 /**
  * Determines if the application is running in development mode.
  * @returns {boolean} True if the application is running in development mode, false otherwise.
@@ -192,19 +194,44 @@ function isDev() {
   // the first two are the path to the node executable and the path to the script being run
   // the third is the first argument passed to the app
   // if it's "--dev", we're in development mode
-  return process.argv[2] === '--dev';
+  return process.argv[2] === "--dev";
 }
 
 function logProps(obj) {
-  for(const prop in obj) {
-    console.log(prop + ' = ' + obj[prop]);
+  for (const prop in obj) {
+    console.log(prop + " = " + obj[prop]);
   }
 }
 
-function handleSetViewRadioButton(event, selectedView) {
-  const views = ['axialView', 'coronalView', 'sagittalView', 'multiPlanarViewACS', 'renderView']
+function handleSetViewRadioButton(
+  event,
+  selectedViewIndex,
+  forceRender = false,
+  mosaic = ""
+) {
+  const views = [
+    "axialView",
+    "coronalView",
+    "sagittalView",
+    "multiPlanarViewACS",
+    "renderView",
+  ];
   let appMenu = Menu.getApplicationMenu();
-  let viewMenu = appMenu.getMenuItemById(views[selectedView]);  
+
+  let viewMenu;
+  if (mosaic) {
+    viewMenu = appMenu.getMenuItemById('mosaicView');
+  } else {
+    switch (selectedViewIndex) {
+      case 4:
+        viewMenu = appMenu.getMenuItemById(
+          forceRender ? "multiPlanarViewACSR" : "multiPlanarViewACS"
+        );
+        break;
+      default:
+        viewMenu = appMenu.getMenuItemById(views[selectedViewIndex]);
+    }
+  }
   viewMenu.checked = true;
 }
 
@@ -231,7 +258,7 @@ function registerIpcListeners() {
     ipcMain.handle(key, handler);
   }
 
-  ipcMain.handle('setViewRadioButton', handleSetViewRadioButton);
+  ipcMain.handle("setViewRadioButton", handleSetViewRadioButton);
 }
 
 /**
@@ -239,15 +266,13 @@ function registerIpcListeners() {
  * @param {string} guiName - The name of the GUI to launch.
  */
 function launchExternalGui(guiName) {
-  const externalGuis = [
-    'fsleyes'
-  ];
+  const externalGuis = ["fsleyes"];
 
   if (externalGuis.includes(guiName)) {
-    const { spawn } = require('child_process');
+    const { spawn } = require("child_process");
     const child = spawn(guiName, [], {
       detached: true,
-      stdio: 'ignore'
+      stdio: "ignore",
     });
     child.unref();
     return true;
@@ -260,17 +285,16 @@ function launchExternalGui(guiName) {
  * Creates a new browser window for the specified GUI.
  * @param {string} guiName - The name of the GUI to create a window for.
  */
-function createWindow(guiName="niivue") {
-
+function createWindow(guiName = "niivue") {
   if (launchExternalGui(guiName)) {
     return;
-  } 
+  }
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
@@ -278,7 +302,9 @@ function createWindow(guiName="niivue") {
     try {
       mainWindow.loadURL(`http://localhost:${devPorts[guiName]}`);
     } catch (err) {
-      console.log(`Error loading ${guiName} at http://localhost:${devPorts[guiName]}`);
+      console.log(
+        `Error loading ${guiName} at http://localhost:${devPorts[guiName]}`
+      );
       console.log(err);
     }
     // Open the DevTools.
@@ -287,26 +313,25 @@ function createWindow(guiName="niivue") {
     // get user home directory
     // const homeDir = app.getPath('home');
     // load the index.html of the app
-    mainWindow.loadFile(path.join(__dirname, 'packaged_ui', 'index.html'));
+    mainWindow.loadFile(path.join(__dirname, "packaged_ui", "index.html"));
     //mainWindow.loadFile(path.join(homeDir, '.niivuegui', guiName, 'index.html'));
   }
-};
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', ()=>{
+app.on("ready", () => {
   registerIpcListeners();
   createWindow();
 });
 
 // Quit when all windows are closed
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
   // close the file server gracefully
-  fileServer.kill()
+  fileServer.kill();
   app.quit();
 });
-
 
 /**
  * Updates the images menu with the specified files.
@@ -319,50 +344,63 @@ app.on('window-all-closed', () => {
  */
 function updateImagesMenu(files) {
   let appMenu = Menu.getApplicationMenu();
-  let imagesMenu = appMenu.getMenuItemById('images');
+  let imagesMenu = appMenu.getMenuItemById("images");
   imagesMenu.submenu = [];
   imagesMenu.submenu.clear();
   for (let i = 0; i < files.length; i++) {
-    imagesMenu.submenu.append(new MenuItem({
-      label: files[i],
-      id: `image-${i}`,
-      click: () => {
-        console.log(`setActiveImage ${i}`)
-        //mainWindow.webContents.send('setActiveImage', i);
-      },
-      submenu: createColormapsMenu(files[i])
-    }));
+    imagesMenu.submenu.append(
+      new MenuItem({
+        label: files[i],
+        id: `image-${i}`,
+        click: () => {
+          console.log(`setActiveImage ${i}`);
+          //mainWindow.webContents.send('setActiveImage', i);
+        },
+        submenu: createColormapsMenu(files[i]),
+      })
+    );
   }
 
-  Menu.setApplicationMenu(appMenu)
+  Menu.setApplicationMenu(appMenu);
 }
 
 function appendImageToMenu(file) {
   let appMenu = Menu.getApplicationMenu();
-  let imagesMenu = appMenu.getMenuItemById('images');
-  imagesMenu.submenu.append(new MenuItem({
-    label: file,
-    id: `image-${imagesMenu.submenu.items.length}`,
-    click: () => {
-      console.log(`setActiveImage ${imagesMenu.submenu.items.length}`)
-    },
-    // add the colormaps submenu to choose a colormap
-    submenu: createColormapsMenu(file)
-  }));
-  Menu.setApplicationMenu(appMenu)
+  let imagesMenu = appMenu.getMenuItemById("images");
+  imagesMenu.submenu.append(
+    new MenuItem({
+      label: file,
+      id: `image-${imagesMenu.submenu.items.length}`,
+      click: () => {
+        console.log(`setActiveImage ${imagesMenu.submenu.items.length}`);
+      },
+      // add the colormaps submenu to choose a colormap
+      submenu: createColormapsMenu(file),
+    })
+  );
+  Menu.setApplicationMenu(appMenu);
 }
 
-function createColormapsMenu(label){
+function createColormapsMenu(label) {
   // create a new submenu for the colormaps
-  const submenu = new Menu()
+  const submenu = new Menu();
   // add the colormaps to the submenu
   for (let j = 0; j < colormaps.length; j++) {
-    const colormap = colormaps[j]
-    submenu.append(new MenuItem({label: colormap, type: 'radio', click: () => {
-      mainWindow.webContents.send('setColormaps', {colormap: colormap, name: label})
-    }}))
+    const colormap = colormaps[j];
+    submenu.append(
+      new MenuItem({
+        label: colormap,
+        type: "radio",
+        click: () => {
+          mainWindow.webContents.send("setColormaps", {
+            colormap: colormap,
+            name: label,
+          });
+        },
+      })
+    );
   }
-  return submenu
+  return submenu;
 }
 
 /**
@@ -372,10 +410,10 @@ function createColormapsMenu(label){
  */
 function getImageMenuList() {
   let appMenu = Menu.getApplicationMenu();
-  let imagesMenu = appMenu.getMenuItemById('images');
+  let imagesMenu = appMenu.getMenuItemById("images");
   // get just the labels as an array
   let menuItems = imagesMenu.submenu.items.map((item) => {
-    return item.id === 'noImages' ? null : item.label;
+    return item.id === "noImages" ? null : item.label;
   });
   // remove nulls
   menuItems = menuItems.filter((item) => {
@@ -400,8 +438,8 @@ function getImageMenuList() {
  * // and the main window receives a loadVolumes message with ['file1.nii.gz', 'file2.nii.gz']
  */
 async function onLoadVolumesClick() {
-  let files = await events.openFileDialog(filters=nvVolumeFilters);
-  mainWindow.webContents.send('loadVolumes', files.filePaths);
+  let files = await events.openFileDialog((filters = nvVolumeFilters));
+  mainWindow.webContents.send("loadVolumes", files.filePaths);
   updateImagesMenu(files.filePaths);
 }
 
@@ -411,8 +449,8 @@ async function onLoadVolumesClick() {
  * @function
  */
 async function onLoadSurfacesClick() {
-  let files = await events.openFileDialog(filters=nvSurfaceFilters);
-  mainWindow.webContents.send('loadSurfaces', files.filePaths);
+  let files = await events.openFileDialog((filters = nvSurfaceFilters));
+  mainWindow.webContents.send("loadSurfaces", files.filePaths);
   updateImagesMenu(files.filePaths);
 }
 
@@ -422,9 +460,9 @@ async function onLoadSurfacesClick() {
  * @function
  */
 async function onAddVolumeOverlayClick() {
-  let files = await events.openFileDialog(filters=nvVolumeFilters);
+  let files = await events.openFileDialog((filters = nvVolumeFilters));
   // send just the first file to the main window, since we only want to add one overlay at a time
-  mainWindow.webContents.send('addVolumeOverlay', files.filePaths[0]);
+  mainWindow.webContents.send("addVolumeOverlay", files.filePaths[0]);
   //let currentImages = getImageMenuList();
   // prepend the new files to the current images
   // updateImagesMenu(files.filePaths.concat(currentImages));
@@ -438,40 +476,40 @@ async function onAddVolumeOverlayClick() {
  * @function
  */
 async function onSetViewClick(view) {
-  mainWindow.webContents.send('setView', view);
+  mainWindow.webContents.send("setView", view);
 }
 
 // create an application menu
 let menu = [
   // add file menu with load volumes option
   {
-    label: 'File',
+    label: "File",
     submenu: [
       // load volumes
       {
-        label: 'Load volumes',
-        id: 'loadVolumes',
+        label: "Load volumes",
+        id: "loadVolumes",
         click: async () => {
           await onLoadVolumesClick();
-        }
+        },
       },
       // load surfaces
       {
-        label: 'Load surfaces',
-        id: 'loadSurfaces',
+        label: "Load surfaces",
+        id: "loadSurfaces",
         click: async () => {
           await onLoadSurfacesClick();
-        }
+        },
       },
       // separator
-      { type: 'separator' },
+      { type: "separator" },
       // add volume overlay
       {
-        label: 'Add volume overlay',
-        id: 'addVolumeOverlay',
+        label: "Add volume overlay",
+        id: "addVolumeOverlay",
         click: async () => {
           await onAddVolumeOverlayClick();
-        }
+        },
       },
       // add surface overlay
       // TODO: this should prob be a separate submenu on each surface item to add mesh overlays
@@ -486,173 +524,172 @@ let menu = [
   },
   // Images menu
   {
-    label: 'Images',
-    submenu: [{label: 'No images loaded', id: 'noImages'}],
-    id: 'images'
+    label: "Images",
+    submenu: [{ label: "No images loaded", id: "noImages" }],
+    id: "images",
   },
   // add view menu with view options
   {
-    label: 'View',
+    label: "View",
     submenu: [
       {
-        label: 'Render',
-        id: 'renderView',
+        label: "Render",
+        id: "renderView",
         click: async () => {
-          onSetViewClick('render');
+          onSetViewClick("render");
         },
-        type: 'radio',
+        type: "radio",
         // set accelerator to to option+r
-        accelerator: 'Option+R'
+        accelerator: "Option+R",
       },
       {
-        label: 'Axial',
-        id: 'axialView',
+        label: "Axial",
+        id: "axialView",
         click: async () => {
-          onSetViewClick('axial');
+          onSetViewClick("axial");
         },
-        type: 'radio',
-        accelerator: 'Option+A'
+        type: "radio",
+        accelerator: "Option+A",
       },
       {
-        label: 'Sagittal',
-        id: 'sagittalView',
+        label: "Sagittal",
+        id: "sagittalView",
         click: async () => {
-          onSetViewClick('sagittal');
+          onSetViewClick("sagittal");
         },
-        type: 'radio',
-        accelerator: 'Option+S'
+        type: "radio",
+        accelerator: "Option+S",
       },
       {
-        label: 'Coronal',
-        id: 'coronalView',
+        label: "Coronal",
+        id: "coronalView",
         click: async () => {
-          onSetViewClick('coronal');
+          onSetViewClick("coronal");
         },
-        type: 'radio',
-        accelerator: 'Option+C'
+        type: "radio",
+        accelerator: "Option+C",
       },
       {
-        label: 'Multi-planar (A+C+S)',
-        id: 'multiPlanarViewACS',
+        label: "Multi-planar (A+C+S)",
+        id: "multiPlanarViewACS",
         click: async () => {
-          onSetViewClick('multiPlanarACS');
+          onSetViewClick("multiPlanarACS");
         },
-        type: 'radio',
-        accelerator: 'Option+M'
+        type: "radio",
+        accelerator: "Option+M",
       },
       {
-        label: 'Multi-planar (A+C+S+R)',
-        id: 'multiPlanarViewACSR',
+        label: "Multi-planar (A+C+S+R)",
+        id: "multiPlanarViewACSR",
         click: async () => {
-          onSetViewClick('multiPlanarACSR');
+          onSetViewClick("multiPlanarACSR");
         },
-        type: 'radio',
-        accelerator: 'Option+Shift+M'
+        type: "radio",
+        accelerator: "Option+Shift+M",
       },
       {
-        label: 'Mosaic',
-        id: 'mosaicView',
+        label: "Mosaic",
+        id: "mosaicView",
         click: async () => {
-          onSetViewClick('mosaic');
+          onSetViewClick("mosaic");
         },
-        type: 'radio',
-        accelerator: 'Option+O'
+        type: "radio",
+        accelerator: "Option+O",
       },
       {
-        label: 'Next frame',
-        id: 'nextFrame',
+        label: "Next frame",
+        id: "nextFrame",
         click: async () => {
-          mainWindow.webContents.send('setFrame', 1);
+          mainWindow.webContents.send("setFrame", 1);
         },
-        accelerator: 'Right'
+        accelerator: "Right",
       },
       {
-        label: 'Previous frame',
-        id: 'previousFrame',
+        label: "Previous frame",
+        id: "previousFrame",
         click: async () => {
-          mainWindow.webContents.send('setFrame', -1);
+          mainWindow.webContents.send("setFrame", -1);
         },
-        accelerator: 'Left'
-      }
+        accelerator: "Left",
+      },
     ],
-    id: 'views'
+    id: "views",
   },
   // add drag menu
   {
-    label: 'Drag',
+    label: "Drag",
     submenu: [
       {
-        label: 'Pan/zoom',
-        id: 'panzoom',
+        label: "Pan/zoom",
+        id: "panzoom",
         click: () => {
-          mainWindow.webContents.send('setDragMode', 'pan');
+          mainWindow.webContents.send("setDragMode", "pan");
         },
-        type: 'radio'
+        type: "radio",
       },
       {
-        label: 'Measure',
-        id: 'measure',
+        label: "Measure",
+        id: "measure",
         click: () => {
-          mainWindow.webContents.send('setDragMode', 'measure');
+          mainWindow.webContents.send("setDragMode", "measure");
         },
-        type: 'radio'
+        type: "radio",
       },
       {
-        label: 'Window/level', // contrast
-        id: 'windowlevel',
+        label: "Window/level", // contrast
+        id: "windowlevel",
         click: () => {
-          mainWindow.webContents.send('setDragMode', 'contrast');
+          mainWindow.webContents.send("setDragMode", "contrast");
         },
-        type: 'radio'
+        type: "radio",
       },
       {
-        label: 'None',
-        id: 'none',
+        label: "None",
+        id: "none",
         click: () => {
-          mainWindow.webContents.send('setDragMode', 'none');
+          mainWindow.webContents.send("setDragMode", "none");
         },
-        type: 'radio'
-      }
-    ]
+        type: "radio",
+      },
+    ],
   },
   // add window menu with reload options
   {
-    label: 'Window',
+    label: "Window",
     submenu: [
       {
-        label: 'Reload',
-        accelerator: 'CmdOrCtrl+R',
+        label: "Reload",
+        accelerator: "CmdOrCtrl+R",
         click: () => {
           BrowserWindow.getFocusedWindow().reload();
-        }
+        },
       },
       {
-        label: 'Toggle DevTools',
-        accelerator: 'CmdOrCtrl+Shift+I',
+        label: "Toggle DevTools",
+        accelerator: "CmdOrCtrl+Shift+I",
         click: () => {
           BrowserWindow.getFocusedWindow().toggleDevTools();
-        }
-      }
-    ]
-  }
+        },
+      },
+    ],
+  },
 ];
 // Add macOS application menus
-if (process.platform === 'darwin') {
+if (process.platform === "darwin") {
   menu.unshift({
     label: app.name,
     submenu: [
-      { role: 'about' },
-      { type: 'separator' },
-      { role: 'services', submenu: [] },
-      { type: 'separator' },
-      { role: 'hide' },
-      { role: 'hideothers' },
-      { role: 'unhide' },
-      { type: 'separator' },
-      { role: 'quit' }
-    ]
+      { role: "about" },
+      { type: "separator" },
+      { role: "services", submenu: [] },
+      { type: "separator" },
+      { role: "hide" },
+      { role: "hideothers" },
+      { role: "unhide" },
+      { type: "separator" },
+      { role: "quit" },
+    ],
   });
 }
 
 Menu.setApplicationMenu(Menu.buildFromTemplate(menu));
-

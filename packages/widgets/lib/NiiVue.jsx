@@ -24,14 +24,6 @@ function interceptMethodCalls(obj, fn) {
   });
 }
 
-const handleMethodCall = (fnName, fnArgs) => {
-  
-  if(fnName === 'setSliceType') {
-    console.log(`${fnName} called with `, fnArgs);
-    niivuejs.onSetViewSelected(fnArgs);
-  }
-};
-
 /**
  * A component that displays a Niivue canvas.
  * @param {Object} props - The component props.
@@ -53,6 +45,22 @@ export function NiiVue({ volumes, surfaces, ...props }) {
   function makeUrl(path) {
     return `http://${commsInfo.host}:${commsInfo.fileServerPort}/${commsInfo.route}?${commsInfo.queryKey}=${path}`;
   }
+
+  
+  function makeMethodCallHandler(nv) {
+    return function handleMethodCall(fnName, fnArgs) {
+        if (fnName === "setSliceType") {
+          console.log(`${fnName} called with `, fnArgs);
+          niivuejs.onSetViewSelected(
+            fnArgs,
+            nv.opts.multiplanarForceRender,
+            nv.sliceMosaicString
+          );
+        }
+      }
+    
+  }
+
   // create a new Niivue object
   // initialize the Niivue object when the component mounts
   useEffect(() => {
@@ -68,17 +76,19 @@ export function NiiVue({ volumes, surfaces, ...props }) {
         onLocationChange: onLocationChange,
       });
       // intercepted object
-      const interceptedNV = interceptMethodCalls(nv, handleMethodCall);
+      const interceptedNV = interceptMethodCalls(
+        nv,
+        makeMethodCallHandler(nv)
+      );
       console.log("attaching to canvas");
-      interceptedNV.attachToCanvas(canvas.current);
-    //   nv.attachToCanvas(canvas.current);
-    //   setNv(nv);
+      interceptedNV.attachToCanvas(canvas.current);      
       setNv(interceptedNV);
     }
   }, []);
 
   useEffect(() => {
     if (nv) {
+      
       const sliceTypes = {
         axial: SLICE_TYPE.AXIAL,
         coronal: SLICE_TYPE.CORONAL,
