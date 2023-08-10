@@ -147,6 +147,11 @@ export function NiiVue({volumes, surfaces,  ...props }){
                 let currentFrame = vol.frame4D
                 nv.setFrame4D(id, currentFrame + frame);
             });
+
+            niivuejs.onSetOptions((options) => {
+                console.log('niivue options');
+                console.log(options);
+            });
         }
     }, [nv]);
 

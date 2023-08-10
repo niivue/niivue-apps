@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   onSetFrame: onSetFrame,
   onSetColormaps: onSetColormaps,
   onSetDragMode: onSetDragMode,
+  onSetOptions: onSetOptions,
 })
 
 async function onLoadVolumes(callback) {
@@ -80,6 +81,12 @@ async function onSetColormaps(callback) {
   })
 }
 
+async function onSetOptions(callback) {
+  ipcRenderer.on('setOptions', (event, options) => {
+    console.log(options)
+    callback(options)
+  })
+}
 
 /**
  * opens a file dialog in the main process

@@ -3,6 +3,7 @@ const path = require('path');
 const { fork } = require("child_process");
 const {devPorts} = require('./devPorts');
 const {events} = require('./events');
+const minimist = require('minimist');
 
 const colormaps = [
   "ROI_i256",
@@ -132,6 +133,8 @@ const nvSurfaceFilters = [
   }
 ];
 
+let commandLineArgs = {};
+
 /**
  * the main window object
  * @type {Electron.BrowserWindow}
@@ -192,7 +195,7 @@ function isDev() {
   // the first two are the path to the node executable and the path to the script being run
   // the third is the first argument passed to the app
   // if it's "--dev", we're in development mode
-  return process.argv[2] === '--dev';
+  return 'dev' in commandLineArgs;
 }
 
 /**
@@ -275,14 +278,25 @@ function createWindow(guiName="niivue") {
     mainWindow.loadFile(path.join(__dirname, 'packaged_ui', 'index.html'));
     //mainWindow.loadFile(path.join(homeDir, '.niivuegui', guiName, 'index.html'));
   }
+
+  mainWindow.webContents.on('did-finish-load', function() {
+    console.log('finished loading');
+    
+    setTimeout(() => {
+      mainWindow.webContents.send('setOptions', commandLineArgs);
+    }, "1000");
+  });
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', ()=>{
+  commandLineArgs = minimist(process.argv.slice(2));
+  console.log('Parsed command line arguments:', commandLineArgs);
   registerIpcListeners();
   createWindow();
+ 
 });
 
 // Quit when all windows are closed
@@ -424,6 +438,16 @@ async function onAddVolumeOverlayClick() {
  */
 async function onSetViewClick(view) {
   mainWindow.webContents.send('setView', view);
+}
+
+/**
+ * Sets the NiiVue options to the specified options
+ * @param {object} options - The render options for NiiVue
+ * @async
+ * @function
+ */
+async function onSetOptions(options) {
+  mainWindow.webContents.send('setOptions', options);
 }
 
 // create an application menu

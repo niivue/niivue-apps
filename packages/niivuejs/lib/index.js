@@ -135,4 +135,9 @@ niivuejs.webGL2Supported = function (){
     return supported;
 }
 
+niivuejs.onSetOptions = function(callback) {
+    if (isFunction(NIIVUE.onSetOptions)) {
+        NIIVUE.onSetOptions(callback);
+    }
+}
 
