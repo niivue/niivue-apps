@@ -1,3 +1,7 @@
+const fs = require('fs');
+const path = require('path');
+const {exec} = require('child_process');
+
 module.exports = {
   packagerConfig: {
     ignore: "(.git|.vscode|node_modules|docs|dist|.gitignore|README.md|LICENSE.md)",
@@ -22,4 +26,14 @@ module.exports = {
       config: {},
     },
   ],
+  hooks: {
+    postMake: async (forgeConfig, options) => {
+        const srcNodeModules = path.join(__dirname, '../../node_modules');
+        console.log(srcNodeModules);
+        const output =  path.join(__dirname, `out/nv-${process.platform}-${process.arch}/resources/app`)
+        const destNodeModules =  path.join(output, 'node_modules')
+        fs.cpSync( srcNodeModules, destNodeModules, {recursive: true});
+        exec(`npm --prefix ${output} prune --production`)
+    }
+}
 };
