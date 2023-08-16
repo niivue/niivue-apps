@@ -3,7 +3,8 @@ const path = require('path');
 const { fork } = require("child_process");
 const {devPorts} = require('./devPorts');
 const {events} = require('./events');
-const minimist = require('minimist');
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 
 const colormaps = [
   "ROI_i256",
@@ -297,7 +298,8 @@ function createWindow(guiName="niivue") {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', ()=>{
-  commandLineArgs = minimist(process.argv.slice(2));
+  commandLineArgs = yargs(hideBin(process.argv)).array('crosshairColor').argv;//minimist(process.argv.slice(2));
+  
   console.log('Parsed command line arguments:', commandLineArgs);
   events.setCommandLineArgs(commandLineArgs);
   registerIpcListeners();
