@@ -141,3 +141,11 @@ niivuejs.onSetOptions = function(callback) {
     }
 }
 
+niivuejs.getCommandLineArgs = async function() {
+    if (isFunction(NIIVUE.getCommandLineArgs)) {
+        return await NIIVUE.getCommandLineArgs();    
+    }
+    
+    return NIIVUE.getCommandLineArgs();
+}
+

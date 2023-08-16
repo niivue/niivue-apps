@@ -17,6 +17,7 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   onSetColormaps: onSetColormaps,
   onSetDragMode: onSetDragMode,
   onSetOptions: onSetOptions,
+  getCommandLineArgs: getCommandLineArgs,
 })
 
 async function onLoadVolumes(callback) {
@@ -86,6 +87,10 @@ async function onSetOptions(callback) {
     console.log(options)
     callback(options)
   })
+}
+
+async function getCommandLineArgs() {
+  return ipcRenderer.invoke('getCommandLineArgs');
 }
 
 /**

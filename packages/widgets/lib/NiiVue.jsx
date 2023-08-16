@@ -22,6 +22,7 @@ export function NiiVue({volumes, surfaces,  ...props }){
     const [nvImages, setNvImages] = useState(volumes);
     const [nvSurfaces, setNvSurfaces] = useState(surfaces);
     const [commsInfo, setCommsInfo] = useState(null);
+    const [cmdLineArgs, setCmdLineArgs] = useState(null);
     // get a reference to the canvas element
     const canvas = useRef(null);
 
@@ -31,21 +32,36 @@ export function NiiVue({volumes, surfaces,  ...props }){
     // create a new Niivue object
     // initialize the Niivue object when the component mounts
     useEffect(() => {
+
         async function runAsyncStartupFuncs(){
             let info = await niivuejs.getCommsInfo()
             console.log(info)
             setCommsInfo(info)
+            console.log('getting command line args');
+            const cmdLineArgs = await niivuejs.getCommandLineArgs();
+            setCmdLineArgs(cmdLineArgs);
+            console.log('cmd line args from NiiVue widget');
+            console.log(cmdLineArgs);
+            if (niivuejs.webGL2Supported()) {
+                console.log('initializing niivue');
+                let crosshairColor = [1.0, 0.0, 0.0];
+                for(const arg in cmdLineArgs) {
+                    if(arg === 'crosshairColor') {
+                        crosshairColor = cmdLineArgs[arg];
+                    }
+
+                }
+                let nv = new Niivue({
+                    onLocationChange: onLocationChange,
+                    crosshairColor
+                })
+                console.log('attaching to canvas');
+                nv.attachToCanvas(canvas.current);
+                setNv(nv);
+            }
         }
         runAsyncStartupFuncs()
-        if (niivuejs.webGL2Supported()) {
-            console.log('initializing niivue');
-            let nv = new Niivue({
-                onLocationChange: onLocationChange,
-            })
-            console.log('attaching to canvas');
-            nv.attachToCanvas(canvas.current);
-            setNv(nv);
-        }
+        
         
     }, []);
 

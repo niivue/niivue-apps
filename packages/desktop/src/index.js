@@ -281,10 +281,15 @@ function createWindow(guiName="niivue") {
 
   mainWindow.webContents.on('did-finish-load', function() {
     console.log('finished loading');
-    
+    //TODO(cdrake): Change this to request from UI (invoke)
     setTimeout(() => {
       mainWindow.webContents.send('setOptions', commandLineArgs);
+      // everything without an argument as a file
+      mainWindow.webContents.send('loadVolumes', commandLineArgs._);
+      updateImagesMenu(commandLineArgs._);
     }, "1000");
+
+    
   });
 };
 
@@ -294,6 +299,7 @@ function createWindow(guiName="niivue") {
 app.on('ready', ()=>{
   commandLineArgs = minimist(process.argv.slice(2));
   console.log('Parsed command line arguments:', commandLineArgs);
+  events.setCommandLineArgs(commandLineArgs);
   registerIpcListeners();
   createWindow();
  
@@ -438,16 +444,6 @@ async function onAddVolumeOverlayClick() {
  */
 async function onSetViewClick(view) {
   mainWindow.webContents.send('setView', view);
-}
-
-/**
- * Sets the NiiVue options to the specified options
- * @param {object} options - The render options for NiiVue
- * @async
- * @function
- */
-async function onSetOptions(options) {
-  mainWindow.webContents.send('setOptions', options);
 }
 
 // create an application menu

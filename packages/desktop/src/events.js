@@ -3,6 +3,8 @@ const fs = require('fs').promises
 const path = require('path')
 const util = require('util') // node.js utility module for promisify
 
+// command line options
+let commandLineArgs = {};
 
 /**
  * gets the file server port and host from the environment variables
@@ -45,10 +47,30 @@ async function onSaveFileDialog() {
     return result
 }
 
+/**
+ * Sets global command line args
+ * @param {Object} args 
+ */
+function onSetCommandLineArgs(args) {
+    commandLineArgs = args;
+    console.log('command line args set to ' + args);
+}
+
+/**
+ * Gets the global command line args
+ * @returns {Object} command line args object 
+ */
+async function onGetCommandLineArgs() {
+    console.log('command line args requested');
+    return commandLineArgs;
+}
+
 const events = {
     openFileDialog: onFileDialog,
     openSaveFileDialog: onSaveFileDialog,
     getCommsInfo: onGetCommsInfo,
+    setCommandLineArgs: onSetCommandLineArgs,
+    getCommandLineArgs: onGetCommandLineArgs,
 }
 
 module.exports.events = events
