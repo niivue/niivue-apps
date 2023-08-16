@@ -58,6 +58,17 @@ export function NiiVue({volumes, surfaces,  ...props }){
                 console.log('attaching to canvas');
                 nv.attachToCanvas(canvas.current);
                 setNv(nv);
+                // load volumes
+                console.log('images to load');
+                console.log(cmdLineArgs._);
+                let imagesToLoad = cmdLineArgs._.map((image) => {
+                    return {
+                        url: `http://${info.host}:${info.fileServerPort}/${info.route}?${info.queryKey}=${image}`,
+                        name: image,
+                    }
+                });
+                setNvImages(JSON.stringify(imagesToLoad));
+               
             }
         }
         runAsyncStartupFuncs()

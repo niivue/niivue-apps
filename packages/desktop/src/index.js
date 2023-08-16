@@ -282,15 +282,6 @@ function createWindow(guiName="niivue") {
 
   mainWindow.webContents.on('did-finish-load', function() {
     console.log('finished loading');
-    //TODO(cdrake): Change this to request from UI (invoke)
-    setTimeout(() => {
-      mainWindow.webContents.send('setOptions', commandLineArgs);
-      // everything without an argument as a file
-      mainWindow.webContents.send('loadVolumes', commandLineArgs._);
-      updateImagesMenu(commandLineArgs._);
-    }, "1000");
-
-    
   });
 };
 
