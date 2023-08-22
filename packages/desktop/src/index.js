@@ -5,6 +5,7 @@ const { devPorts } = require("./devPorts");
 const { events } = require("./events");
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
+const fs = require("fs");
 
 const colormaps = [
   "ROI_i256",
@@ -281,11 +282,103 @@ function createWindow(guiName = "niivue") {
     //mainWindow.loadFile(path.join(homeDir, '.niivuegui', guiName, 'index.html'));
   }
 
-  const filepathlocal = path.join(__dirname, "../assets/page.mhtml");
-  console.log("saving file to " + filepathlocal);
+  const filepathlocal = path.join(__dirname, "../assets/page.html");
+  // Usage example:
+  const newScriptSrc = "https://niivue.github.io/niivue/features/niivue.es.js";
+
+  function updateHTMLFile(filePath, newScriptSrc) {
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+        console.error(`Error reading file: ${err}`);
+        return;
+      }
+
+      // // Define the regular expression to match the existing script tag
+      // const scriptTagRegex =
+      //   /<script\s+type="module"\s+crossorigin=""\s+src=".+?\.js"><\/script>/g;
+
+      // // Define the regular expression to match the existing canvas element
+      // const canvasRegex =
+      //   /<canvas\s+height="575"\s+width="1000"\s+style="width: 100%; height: 100%;".*?>[\s\S]*?<\/canvas>/g;
+
+      // // Define the regular expression to match the existing <div> element
+      // const divTagRegex = /<div\s+id="root">[\s\S]*?<\/div>/g;
+
+      // // Replace the existing script tag with the new source
+      // let updatedData = data.replace(
+      //   scriptTagRegex,
+      //   `<script type="module" async>
+      //     import * as niivue from "https://niivue.github.io/niivue/features/niivue.es.js";
+      //     var nv1 = new niivue.Niivue();
+      //     nv1.attachTo("gl1");
+      //     nv1.setSliceType(nv1.sliceTypeRender);
+      //   </script>
+      //   <script type="module" src="${newScriptSrc}"></script>`
+      // );
+
+      // // Replace the <div id="root"> with the new canvas element
+      // updatedData = updatedData.replace(divTagRegex, '<canvas id="gl1"></canvas>');
+
+      // // Replace the existing canvas element with the new one
+      // const finalUpdatedData = updatedData.replace(
+      //   canvasRegex,
+      //   '<canvas id="gl1" style="width: 100%; height: 100%;" tabindex="0"></canvas>'
+      // );
+      // Define the regular expression to match the existing script tag
+      const scriptTagRegex =
+        /<script\s+type="module"\s+crossorigin=""\s+src=".+?\.js"><\/script>/g;
+
+      // Replace the contents of the <body> tag with the new canvas element
+      let updatedData = data.replace(
+        /<body[\s\S]*<\/body>/g,
+        '<body><canvas id="gl1"></canvas></body>'
+      );
+
+      updatedData = updatedData.replace(
+        /<link(.*)+\.css\">/g,
+        '<link rel="stylesheet" href="https://niivue.github.io/niivue/features/light.css">'
+      );
+      // Replace the existing script tag with the new source
+      const finalUpdatedData = updatedData.replace(
+        scriptTagRegex,
+        `<script type="module" async>
+        import * as niivue from "https://niivue.github.io/niivue/features/niivue.es.js";
+        var nv1 = new niivue.Niivue();
+        nv1.attachTo("gl1");
+        nv1.setSliceType(nv1.sliceTypeRender);
+      </script>
+      <script type="module" src="${newScriptSrc}"></script>`
+      );
+
+      // Write the updated HTML back to the file
+      fs.writeFile(filePath, finalUpdatedData, "utf8", (err) => {
+        if (err) {
+          console.error(`Error writing file: ${err}`);
+          return;
+        }
+        console.log(`HTML file updated successfully.`);
+      });
+    });
+  }
+
+  async function saveWebPage() {
+    console.log("saving file to " + filepathlocal);
+    try {
+      await mainWindow.webContents.savePage(filepathlocal, "HTMLComplete");
+      console.log("Page was saved successfully.");
+      updateHTMLFile(filepathlocal, newScriptSrc);
+    } catch (e) {
+      console.log("error during save");
+      console.log("Error", e.stack);
+      console.log("Error", e.name);
+      console.log("Error", e.message);
+      console.trace();
+    }
+  }
+
   mainWindow.webContents.on("dom-ready", function () {
     console.log("finished loading");
-
+    saveWebPage();
     // mainWindow.webContents.executeJavaScript(`
     //     var save = document.getElementById("save");
     // save.addEventListener("click", () => {
@@ -320,7 +413,11 @@ function createWindow(guiName = "niivue") {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-  commandLineArgs = yargs(hideBin(process.argv)).array("crosshairColor").array("backColor").array("clipPlaneColor").boolean('show3Dcrosshair').argv; //minimist(process.argv.slice(2));
+  commandLineArgs = yargs(hideBin(process.argv))
+    .array("crosshairColor")
+    .array("backColor")
+    .array("clipPlaneColor")
+    .boolean("show3Dcrosshair").argv; //minimist(process.argv.slice(2));
 
   console.log("Parsed command line arguments:", commandLineArgs);
   events.setCommandLineArgs(commandLineArgs);

@@ -65,12 +65,18 @@ async function onGetCommandLineArgs() {
     return commandLineArgs;
 }
 
+async function sendDocument(doc) {
+    console.log('document received');
+    console.log(doc);
+}
+
 const events = {
     openFileDialog: onFileDialog,
     openSaveFileDialog: onSaveFileDialog,
     getCommsInfo: onGetCommsInfo,
     setCommandLineArgs: onSetCommandLineArgs,
     getCommandLineArgs: onGetCommandLineArgs,
+    sendDocument: sendDocument
 }
 
 module.exports.events = events

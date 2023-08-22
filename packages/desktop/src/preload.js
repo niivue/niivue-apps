@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   onSetDragMode: onSetDragMode,
   onSetOptions: onSetOptions,
   getCommandLineArgs: getCommandLineArgs,
+  sendDocument: sendDocument,
 })
 
 async function onLoadVolumes(callback) {
@@ -111,4 +112,12 @@ async function openFileDialog() {
  */
 async function openSaveFileDialog() {
   return ipcRenderer.invoke('openSaveFileDialog')
+}
+
+/**
+ * Sends the electron document as json
+ * @returns {Promise}
+ */
+async function sendDocument() {
+  return ipcRenderer.invoke('sendDocument')
 }
