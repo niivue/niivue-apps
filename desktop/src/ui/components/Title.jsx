@@ -1,6 +1,3 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-
 /**
  * A component that displays a title.
  * @param {Object} props - The component props.
@@ -11,8 +8,8 @@ import Typography from '@mui/material/Typography';
  */ 
 export function Title({ children }) {
     return (
-        <Box
-        sx={{
+        <div
+        style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -20,9 +17,21 @@ export function Title({ children }) {
             height: '100%',
         }}
         >
-        <Typography variant="h3" gutterBottom>
-            {children}
-        </Typography>
-        </Box>
+            <h3
+                style={
+                    {
+                        fontFamily: 'sans-serif',
+                        fontSize: '2rem',
+                        fontWeight: 'bold',
+                        color: '#fff',
+                        margin: 0,
+                        padding: 0,
+                        textAlign: 'center'
+                    }
+                }
+            >
+                {children}
+            </h3>
+        </div>
     );
     }

@@ -1,6 +1,3 @@
-import Box from '@mui/material/Box';
-
-
 /**
  * A container component that displays its children in a flexbox layout.
  * @param {Object} props - The component props.
@@ -21,8 +18,8 @@ import Box from '@mui/material/Box';
  */
 export function AppContainer({ children, asColumn = true, ...props}) {
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         display: 'flex',
         flexDirection: asColumn ? 'column' : 'row',
         alignItems: 'center',
@@ -32,6 +29,6 @@ export function AppContainer({ children, asColumn = true, ...props}) {
       }}
     >
       {children}
-    </Box>
+    </div>
   );
 }

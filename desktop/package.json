@@ -1,6 +1,6 @@
 {
-  "name": "desktop",
-  "productName": "niivue",
+  "name": "niivue-desktop",
+  "productName": "NiiVue",
   "version": "0.0.1",
   "description": "A medical image viewer with a focus on neuroimaging",
   "main": "src/electron/index.js",
@@ -21,11 +21,7 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@fontsource/roboto": "^5.0.8",
     "@mui/icons-material": "^5.14.8",
-    "@mui/material": "^5.14.8",
     "@niivue/niivue": "^0.36.0",
     "cors": "^2.8.5",
     "electron-squirrel-startup": "^1.0.0",

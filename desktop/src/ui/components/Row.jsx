@@ -1,5 +1,3 @@
-import Box from '@mui/material/Box';
-
 /**
  * A container component that displays its children in a Flexbox row.
  * @param {Object} props - The component props.
@@ -12,14 +10,14 @@ import Box from '@mui/material/Box';
  */
 export function Row({ children, ...props }){
     return (
-        <Box
-        sx={{
+        <div
+        style={{
             display: 'flex',
             flexDirection: 'row',
             ...props
         }}
         >
         {children}
-        </Box>
+        </div>
     )
 }

@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import { useRef, useEffect, useState } from 'react';
 import {Niivue, SLICE_TYPE} from '@niivue/niivue'
 import {niivuejs} from '../niivuejs'
@@ -186,8 +185,8 @@ export function NiiVue({volumes=[], surfaces,  ...props }){
         // otherwise return the canvas element
         // with niivue attached
         return (
-            <Box
-            sx={{
+            <div
+            style={{
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
@@ -197,7 +196,7 @@ export function NiiVue({volumes=[], surfaces,  ...props }){
             >   
             <canvas ref={canvas} height={480} width={640}></canvas>
 
-            </Box>
+            </div>
         )
     }
 }

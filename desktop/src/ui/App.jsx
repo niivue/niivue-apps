@@ -2,10 +2,8 @@ import { useState, useEffect} from 'react'
 import './App.css'
 import {niivuejs} from './niivuejs'
 import {AppContainer} from './components/AppContainer'
-import {Title} from './components/Title'
 import {Row} from './components/Row'
 import {NiiVue} from './components/NiiVue'
-import { CssBaseline } from '@mui/material';
 
 // the main app component for the bet tool that renders the UI
 function App() {
@@ -41,7 +39,6 @@ function App() {
 
   return (
       <AppContainer gap={0}>
-        <CssBaseline/>
         <Row height={'100%'} width={'100%'} flexGrow={1}>
           <NiiVue volumes={JSON.stringify(nvImages)}/>
         </Row>
