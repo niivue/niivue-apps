@@ -18,7 +18,7 @@ export const niivuejs = {};
  * @returns {boolean} True if the value is a function, false otherwise.
  */
 function isFunction(value) {
-    return (typeof value === 'function');
+  return typeof value === "function";
 }
 
 /**
@@ -27,13 +27,13 @@ function isFunction(value) {
  * @function
  * @returns {Promise<Object>} A promise that resolves to an object containing the file path and the file name.
  */
-niivuejs.openFileDialog = async function (){
-    if (isFunction(NIIVUE.openFileDialog)) {
-        return await NIIVUE.openFileDialog();
-    } else {
-        return NIIVUE.openFileDialog;
-    }
-}
+niivuejs.openFileDialog = async function () {
+  if (isFunction(NIIVUE.openFileDialog)) {
+    return await NIIVUE.openFileDialog();
+  } else {
+    return NIIVUE.openFileDialog;
+  }
+};
 
 /**
  * opens a save file dialog in the main process
@@ -41,13 +41,13 @@ niivuejs.openFileDialog = async function (){
  * @function
  * @returns {Promise<Object>} A promise that resolves to an object containing the file path and the file name.
  */
-niivuejs.openSaveFileDialog = async function (){
-    if (isFunction(NIIVUE.openSaveFileDialog)) {
-        return await NIIVUE.openSaveFileDialog();
-    } else {
-        return NIIVUE.openSaveFileDialog;
-    }
-}
+niivuejs.openSaveFileDialog = async function () {
+  if (isFunction(NIIVUE.openSaveFileDialog)) {
+    return await NIIVUE.openSaveFileDialog();
+  } else {
+    return NIIVUE.openSaveFileDialog;
+  }
+};
 
 /**
  * removes the extension from a string
@@ -60,11 +60,11 @@ niivuejs.openSaveFileDialog = async function (){
  * const strWithoutExt = niivuejs.removeExtension(str);
  * console.log(strWithoutExt);
  */
-niivuejs.removeExtension = function (str, ext='.nii'){
-    let arr = str.split(ext);
-    arr.pop();
-    return arr.join('');
-}
+niivuejs.removeExtension = function (str, ext = ".nii") {
+  let arr = str.split(ext);
+  arr.pop();
+  return arr.join("");
+};
 
 /**
  * gets the comms info from the main process
@@ -76,63 +76,67 @@ niivuejs.removeExtension = function (str, ext='.nii'){
  * console.log(commsInfo);
  * // { fileServerPort: 12345, host: 'localhost' }
  */
-niivuejs.getCommsInfo = async function (){
-    if (isFunction(NIIVUE.getCommsInfo)) {
-        return await NIIVUE.getCommsInfo();
-    } else {
-        return NIIVUE.getCommsInfo;
-    }
-}
+niivuejs.getCommsInfo = async function () {
+  if (isFunction(NIIVUE.getCommsInfo)) {
+    return await NIIVUE.getCommsInfo();
+  } else {
+    return NIIVUE.getCommsInfo;
+  }
+};
 
-niivuejs.onLoadVolumes = function (callback){
-    if (isFunction(NIIVUE.onLoadVolumes)) {
-        NIIVUE.onLoadVolumes(callback);
-    }
-}
+niivuejs.onLoadVolumes = function (callback) {
+  if (isFunction(NIIVUE.onLoadVolumes)) {
+    NIIVUE.onLoadVolumes(callback);
+  }
+};
 
-niivuejs.onLoadSurfaces = function (callback){
-    if (isFunction(NIIVUE.onLoadSurfaces)) {
-        NIIVUE.onLoadSurfaces(callback);
-    }
-}
+niivuejs.onLoadSurfaces = function (callback) {
+  if (isFunction(NIIVUE.onLoadSurfaces)) {
+    NIIVUE.onLoadSurfaces(callback);
+  }
+};
 
-niivuejs.onAddVolumeOverlay = function (callback){
-    if (isFunction(NIIVUE.onAddVolumeOverlay)) {
-        NIIVUE.onAddVolumeOverlay(callback);
-    }
-}
+niivuejs.onAddVolumeOverlay = function (callback) {
+  if (isFunction(NIIVUE.onAddVolumeOverlay)) {
+    NIIVUE.onAddVolumeOverlay(callback);
+  }
+};
 
-niivuejs.onSetView = function (callback){
-    if (isFunction(NIIVUE.onSetView)) {
-        NIIVUE.onSetView(callback);
-    }
-}
+niivuejs.onSetView = function (callback) {
+  if (isFunction(NIIVUE.onSetView)) {
+    NIIVUE.onSetView(callback);
+  }
+};
 
-niivuejs.onSetDragMode = function (callback){
-    if (isFunction(NIIVUE.onSetDragMode)) {
-        NIIVUE.onSetDragMode(callback);
-    }
-}
+niivuejs.onSetDragMode = function (callback) {
+  if (isFunction(NIIVUE.onSetDragMode)) {
+    NIIVUE.onSetDragMode(callback);
+  }
+};
 
-niivuejs.onSetFrame = function (callback){
-    if (isFunction(NIIVUE.onSetFrame)) {
-        NIIVUE.onSetFrame(callback);
-    }
-}
+niivuejs.onSetFrame = function (callback) {
+  if (isFunction(NIIVUE.onSetFrame)) {
+    NIIVUE.onSetFrame(callback);
+  }
+};
 
-niivuejs.onSetColormaps = function (callback){
-    if (isFunction(NIIVUE.onSetColormaps)) {
-        NIIVUE.onSetColormaps(callback);
-    }
-}
+niivuejs.onSetColormaps = function (callback) {
+  if (isFunction(NIIVUE.onSetColormaps)) {
+    NIIVUE.onSetColormaps(callback);
+  }
+};
 
-niivuejs.webGL2Supported = function (){
-    let canvas = document.createElement('canvas');
-    let gl = canvas.getContext('webgl2');
-    let supported = gl !== null;
-    // remove the temporary canvas from the DOM
-    canvas.remove();
-    return supported;
-}
+niivuejs.webGL2Supported = function () {
+  let canvas = document.createElement("canvas");
+  let gl = canvas.getContext("webgl2");
+  let supported = gl !== null;
+  // remove the temporary canvas from the DOM
+  canvas.remove();
+  return supported;
+};
 
-
+niivuejs.onSetViewSelected = function (view, forceRender = false, mosaic = '') {
+  if (isFunction(NIIVUE.onSetViewSelected)) {
+    NIIVUE.onSetViewSelected(view, forceRender, mosaic);
+  }
+};
