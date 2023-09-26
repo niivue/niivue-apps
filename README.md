@@ -1,33 +1,32 @@
 # [WIP] NiiVue Apps
 
-A monorepo for NiiVue applications (desktop, web, mobile). 
+This repo contains NiiVue Desktop and Mobile apps. Each app incorporates the NiiVue library and exposes features of the library in a user-friendly way.
 
-## Packages
-
-- [niivuejs](packages/niivuejs/README.md)
-- [desktop](packages/desktop/README.md)
-- [widgets](packages/widgets/README.md)
-- [niivue](packages/niivue/README.md)
+Everything is a work in progress and subject to change.
 
 ## Development
+
+Clone this repo and run the following commands to get started.
+```bash
+git clone git@github.com:niivue/niivue-apps.git
+cd niivue-apps/desktop
+```
+
+Install dependencies
+```
+npm install
+```
+
+Start the desktop app in dev mode
+```
+npm run dev
+```
+
+Build the desktop app
+```
+npm run build
+```
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/en/) (at least the latest LTS version)
-
-### Setup
-
-```bash
-git clone git@github.com:niivue/niivue-apps.git
-cd niivue-apps
-npm run bootstrap
-```
-
-### Dev workflow
-
-```bash
-# start all packages in dev mode (enables hot reloading of the render process only)
-# changes to the main process require a restart of the app (ctrl+c)
-npm run dev
-```
-
