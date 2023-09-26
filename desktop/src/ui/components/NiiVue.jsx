@@ -189,12 +189,26 @@ export function NiiVue({volumes=[], surfaces,  ...props }){
             style={{
                 display: 'flex',
                 flexDirection: 'column',
+                flexGrow: 1,
+                flexShrink: 1,
                 width: '100%',
                 height: '100%',
+                minWidth: '0px',
+                minHeight: '0px',
                 ...props
             }}
             >   
-            <canvas ref={canvas} height={480} width={640}></canvas>
+            <canvas 
+                ref={canvas} 
+                height={480} 
+                width={640}
+                style={{
+                    outline: 'none', // remove focus ring
+                    minWidth: '0px',
+                    minHeight: '0px',
+                }}
+            >
+            </canvas>
 
             </div>
         )

@@ -25,6 +25,7 @@ export function AppContainer({ children, asColumn = true, ...props}) {
         alignItems: 'center',
         justifyContent: 'center',
         height: '100vh',
+        minHeight: '300px',
         ...props
       }}
     >

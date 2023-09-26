@@ -14,6 +14,8 @@ export function Row({ children, ...props }){
         style={{
             display: 'flex',
             flexDirection: 'row',
+            minWidth: '0px',
+            minHeight: '0px',
             ...props
         }}
         >
