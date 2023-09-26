@@ -17,17 +17,19 @@ function onLocationChange(location) {
  * images='[{"url":"http://localhost:<port>/file?filename=/path/to/file.nii.gz","name":"file.nii.gz"}]'
  * />
  */
-export function NiiVue({volumes, surfaces,  ...props }){
+export function NiiVue({volumes=[], surfaces,  ...props }){
     const [nv, setNv] = useState(null);
     const [nvImages, setNvImages] = useState(volumes);
     const [nvSurfaces, setNvSurfaces] = useState(surfaces);
     const [commsInfo, setCommsInfo] = useState(null);
+    const opacity = useRef(1)
     // get a reference to the canvas element
     const canvas = useRef(null);
 
     function makeUrl(path){
         return `http://${commsInfo.host}:${commsInfo.fileServerPort}/${commsInfo.route}?${commsInfo.queryKey}=${path}`
     }
+
     // create a new Niivue object
     // initialize the Niivue object when the component mounts
     useEffect(() => {
@@ -192,7 +194,7 @@ export function NiiVue({volumes, surfaces,  ...props }){
                 height: '100%',
                 ...props
             }}
-            >
+            >   
             <canvas ref={canvas} height={480} width={640}></canvas>
 
             </Box>

@@ -9,6 +9,7 @@ function App() {
   const [nvImages, setNvImages] = useState([])
   // set the initial state of the commsInfo object to an empty object
   const [commsInfo, setCommsInfo] = useState({})
+  
 
   // send a message to the main process to open a file dialog
   async function openFileDialog(){
@@ -38,7 +39,7 @@ function App() {
   return (
       <AppContainer gap={0}>
         <Row height={'100%'} width={'100%'}>
-          <NiiVue images={JSON.stringify(nvImages)}/>
+          <NiiVue volumes={JSON.stringify(nvImages)}/>
         </Row>
       </AppContainer>
   )
