@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 
+
 /**
  * A container component that displays its children in a flexbox layout.
  * @param {Object} props - The component props.
