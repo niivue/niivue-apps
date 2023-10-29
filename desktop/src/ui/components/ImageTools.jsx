@@ -1,16 +1,16 @@
-export function FileList({ children, ...props }){
+export function ImageTools({ children, ...props }){
     return (
         <div
         style={{
             display: 'flex',
             flexDirection: 'column',
+            alignItems: 'flex-start',
             minWidth: '100%',
             width: '100%',
-            minHeight: '40%',
-            // very light gray
+            minHeight: '100px',
             backgroundColor: '#F8F8F8',
-            // slight border radius
             borderRadius: '4px',
+            gap: '10px',
             ...props
         }}
         >

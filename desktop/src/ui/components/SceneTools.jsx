@@ -1,4 +1,4 @@
-export function FileList({ children, ...props }){
+export function SceneTools({ children, ...props }){
     return (
         <div
         style={{
@@ -6,10 +6,8 @@ export function FileList({ children, ...props }){
             flexDirection: 'column',
             minWidth: '100%',
             width: '100%',
-            minHeight: '40%',
-            // very light gray
+            minHeight: '50px',
             backgroundColor: '#F8F8F8',
-            // slight border radius
             borderRadius: '4px',
             ...props
         }}

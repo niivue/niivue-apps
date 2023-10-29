@@ -1,9 +1,9 @@
-export function Row({ children, ...props }){
+export function Column({ children, ...props }){
     return (
         <div
         style={{
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
             minWidth: '50px',
             minHeight: '50px',
             ...props

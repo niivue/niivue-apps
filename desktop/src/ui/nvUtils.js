@@ -10,7 +10,7 @@ const NIIVUE = window.NIIVUE || {};
  * The main NIIVUEJS namespace object.
  * @namespace
  */
-export const niivuejs = {};
+export const nvUtils = {};
 
 /**
  * Determines if the given value is a function.
@@ -27,7 +27,7 @@ function isFunction(value) {
  * @function
  * @returns {Promise<Object>} A promise that resolves to an object containing the file path and the file name.
  */
-niivuejs.openFileDialog = async function () {
+nvUtils.openFileDialog = async function () {
   if (isFunction(NIIVUE.openFileDialog)) {
     return await NIIVUE.openFileDialog();
   } else {
@@ -41,7 +41,7 @@ niivuejs.openFileDialog = async function () {
  * @function
  * @returns {Promise<Object>} A promise that resolves to an object containing the file path and the file name.
  */
-niivuejs.openSaveFileDialog = async function () {
+nvUtils.openSaveFileDialog = async function () {
   if (isFunction(NIIVUE.openSaveFileDialog)) {
     return await NIIVUE.openSaveFileDialog();
   } else {
@@ -60,7 +60,7 @@ niivuejs.openSaveFileDialog = async function () {
  * const strWithoutExt = niivuejs.removeExtension(str);
  * console.log(strWithoutExt);
  */
-niivuejs.removeExtension = function (str, ext = ".nii") {
+nvUtils.removeExtension = function (str, ext = ".nii") {
   let arr = str.split(ext);
   arr.pop();
   return arr.join("");
@@ -76,7 +76,7 @@ niivuejs.removeExtension = function (str, ext = ".nii") {
  * console.log(commsInfo);
  * // { fileServerPort: 12345, host: 'localhost' }
  */
-niivuejs.getCommsInfo = async function () {
+nvUtils.getCommsInfo = async function () {
   if (isFunction(NIIVUE.getCommsInfo)) {
     return await NIIVUE.getCommsInfo();
   } else {
@@ -84,49 +84,49 @@ niivuejs.getCommsInfo = async function () {
   }
 };
 
-niivuejs.onLoadVolumes = function (callback) {
+nvUtils.onLoadVolumes = function (callback) {
   if (isFunction(NIIVUE.onLoadVolumes)) {
     NIIVUE.onLoadVolumes(callback);
   }
 };
 
-niivuejs.onLoadSurfaces = function (callback) {
+nvUtils.onLoadSurfaces = function (callback) {
   if (isFunction(NIIVUE.onLoadSurfaces)) {
     NIIVUE.onLoadSurfaces(callback);
   }
 };
 
-niivuejs.onAddVolumeOverlay = function (callback) {
+nvUtils.onAddVolumeOverlay = function (callback) {
   if (isFunction(NIIVUE.onAddVolumeOverlay)) {
     NIIVUE.onAddVolumeOverlay(callback);
   }
 };
 
-niivuejs.onSetView = function (callback) {
+nvUtils.onSetView = function (callback) {
   if (isFunction(NIIVUE.onSetView)) {
     NIIVUE.onSetView(callback);
   }
 };
 
-niivuejs.onSetDragMode = function (callback) {
+nvUtils.onSetDragMode = function (callback) {
   if (isFunction(NIIVUE.onSetDragMode)) {
     NIIVUE.onSetDragMode(callback);
   }
 };
 
-niivuejs.onSetFrame = function (callback) {
+nvUtils.onSetFrame = function (callback) {
   if (isFunction(NIIVUE.onSetFrame)) {
     NIIVUE.onSetFrame(callback);
   }
 };
 
-niivuejs.onSetColormaps = function (callback) {
+nvUtils.onSetColormaps = function (callback) {
   if (isFunction(NIIVUE.onSetColormaps)) {
     NIIVUE.onSetColormaps(callback);
   }
 };
 
-niivuejs.webGL2Supported = function () {
+nvUtils.webGL2Supported = function () {
   let canvas = document.createElement("canvas");
   let gl = canvas.getContext("webgl2");
   let supported = gl !== null;
@@ -135,7 +135,7 @@ niivuejs.webGL2Supported = function () {
   return supported;
 };
 
-niivuejs.onSetViewSelected = function (view, forceRender = false, mosaic = '') {
+nvUtils.onSetViewSelected = function (view, forceRender = false, mosaic = '') {
   if (isFunction(NIIVUE.onSetViewSelected)) {
     NIIVUE.onSetViewSelected(view, forceRender, mosaic);
   }
