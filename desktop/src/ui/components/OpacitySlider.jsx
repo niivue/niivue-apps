@@ -2,7 +2,17 @@ import React from "react"
 import Slider from "@mui/material/Slider"
 import Typography from "@mui/material/Typography"
 
-export function OpacitySlider({ children, ...props }){
+export function OpacitySlider({ 
+    opacity, 
+    onSetOpacity=()=>{},
+    children, 
+    ...props 
+}){
+
+    function handleOpacityChange(event, value){
+        console.log(value)
+        onSetOpacity(Number(value))
+    }
     return (
         <div
         style={{
@@ -13,8 +23,6 @@ export function OpacitySlider({ children, ...props }){
             width: '100%',
             minHeight: '50px',
             gap: '4px',
-            // marginLeft: '8px',
-            // marginRight: '8px',
             ...props
         }}
         >
@@ -31,6 +39,8 @@ export function OpacitySlider({ children, ...props }){
                 step={0.05}
                 size="small"
                 valueLabelDisplay="auto"
+                value={opacity}
+                onChange={handleOpacityChange}
             />
         </div>
     )

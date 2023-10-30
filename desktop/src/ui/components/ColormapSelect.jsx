@@ -8,10 +8,11 @@ import Box from '@mui/material/Box'
 export function ColormapSelect({
   colormaps=[], 
   onSetColormap=()=>{},
+  colormap,
   ...props 
 }){
 
-    const [color, setColor] = React.useState('gray')
+    const [color, setColor] = React.useState(colormap)
 
     function handleColorChange(event) {
         let clr = event.target.value

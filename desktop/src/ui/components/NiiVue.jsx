@@ -6,7 +6,7 @@ export function NiiVue({nv=null, volumes=[], meshes=[],  ...props }){
     const [commsInfo, setCommsInfo] = useState(null);
     const canvas = useRef(null);
 
-    // when component is mounted, attach niivue to the canvas
+    // initialize the Niivue object when the component mounts
     useEffect(() => {
         if (nv){
             nv.attachToCanvas(canvas.current);

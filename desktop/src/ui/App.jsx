@@ -1,24 +1,34 @@
-import { useState, useEffect, useCallback} from 'react'
+import { useState, useEffect, useCallback, useContext, createContext} from 'react'
 import './App.css'
 import {nvUtils} from './nvUtils'
-import {Niivue, colortables} from '@niivue/niivue'
+import {Niivue, colortables, SLICE_TYPE} from '@niivue/niivue'
 import {AppContainer} from './components/AppContainer'
-import {Row} from './components/Row'
-import {Column} from './components/Column'
 import {NiiVue} from './components/NiiVue'
 import { Sidebar } from './components/Sidebar'
 import { FileList } from './components/FileList'
 import { ImageTools } from './components/ImageTools'
-import { SceneTools } from './components/SceneTools'
 import { FileItem } from './components/FileItem'
 import { ColormapSelect } from './components/ColormapSelect'
 import { MinMaxInput } from './components/MinMaxInput'
 import { OpacitySlider } from './components/OpacitySlider'
 import CssBaseline from '@mui/material/CssBaseline';
 
+const _nv = new Niivue()
+const NV = createContext(_nv)
+
+const sliceTypes = {
+  'axial': SLICE_TYPE.AXIAL,
+  'coronal': SLICE_TYPE.CORONAL,
+  'sagittal': SLICE_TYPE.SAGITTAL,
+  'multiPlanarACS': SLICE_TYPE.MULTIPLANAR,
+  'render': SLICE_TYPE.RENDER
+}
+
+
 function App() {
   // create a new Niivue object
-  const nv = new Niivue()
+  const nv = useContext(NV)
+  
   // get the list of colormap names
   const colormapNames = nv.colormaps(true) // sorted by name
   // create an array of objects with the colormap name and values (used to render the colormap select)
@@ -34,7 +44,12 @@ function App() {
   const [commsInfo, setCommsInfo] = useState({})
   const [activeImage, setActiveImage] = useState(0) // index of the active image
   const [images, setImages] = useState([])
-  const [imagesString, setImagesString] = useState(JSON.stringify(images))
+  const [min, setMin] = useState(0)
+  const [max, setMax] = useState(0)
+  const [calMin, setCalMin] = useState(0)
+  const [calMax, setCalMax] = useState(0)
+  const [opacity, setOpacity] = useState(1)
+  const [colormap, setColormap] = useState('gray') // default
 
   // ------------ Effects ------------
   // get the comms info from the main process
@@ -52,8 +67,73 @@ function App() {
           await addVolume(img, info)
         })
       })
+      // set the callback for when the view needs updating
+      nvUtils.onSetView((view) => {
+        // clear the mosaic string
+        nv.setSliceMosaicString("");
+        if (view === 'multiPlanarACSR') {
+          nv.opts.multiplanarForceRender = true;
+        } else if (view === 'mosaic') {
+          // TODO: allow the user to set the mosaic string
+          nv.setSliceMosaicString("A 0 20 C 30 S 42");
+          nv.opts.multiplanarForceRender = false;
+        } else {
+          nv.opts.multiplanarForceRender = false;
+        }
+        nv.setSliceType(sliceTypes[view]);
+      });
+
+      // set the callback for when the DRAG mode changes
+      nvUtils.onSetDragMode((mode) => {
+        switch (mode) {
+          case 'pan':
+            nv.opts.dragMode = nv.dragModes.pan
+            break;
+          case 'contrast':
+            nv.opts.dragMode = nv.dragModes.contrast
+            break;
+          case 'measure':
+            nv.opts.dragMode = nv.dragModes.measurement
+            break;
+          case 'none':
+            nv.opts.dragMode = nv.dragModes.none
+            break;
+        }
+      });
+
+      // set the callback for when the volume number updates (4D files)
+      nvUtils.onSetFrame((frame) => {
+        let vol = nv.volumes[activeImage];
+        let id = vol.id;
+        let currentFrame = vol.frame4D
+        nv.setFrame4D(id, currentFrame + frame);
+    });
+
     }
     getCommsInfo()
+  }, [])
+
+  // when active image changes, update the min and max
+  useEffect(() => {
+    if(images.length === 0){
+      return
+    }
+    let vol = nv.volumes[activeImage]
+    setCalMin(vol.cal_min)
+    setCalMax(vol.cal_max)
+    setMin(vol.cal_min)
+    setMax(vol.cal_max)
+    setOpacity(vol.opacity)
+    setColormap(vol.colormap)
+  }, [activeImage, images])
+
+  // when user changes intensity with the right click selection box
+  // for now, only works with the background image
+  useEffect(() => {
+    nv.onIntensityChange = (volume) => {
+      setMin(volume.cal_min)
+      setMax(volume.cal_max)
+    }
   }, [])
 
   // ------------ Helper Functions ------------
@@ -74,31 +154,29 @@ function App() {
       return image
     })
     setImages(newImages)
-    // use imagesString here?
   }
 
   const setVisibility  = useCallback((index, opacity)=>{
-    console.log('set visibility')
-    console.log(nv)
     nv.setOpacity(index, opacity)
-    // update the image at index with the new opacity
-    let newImages = images.map((image, i) => {
-      if(i === index){
-        image.visible = opacity > 0
-      }
-      return image
-    })
-    setImagesString(JSON.stringify(newImages))
-    setImages(newImages)
-  }, [imagesString])
+  }, [])
+
+  const updateOpacity = useCallback((opacity)=>{
+    nv.setOpacity(activeImage, opacity)
+    setOpacity(opacity)
+  }, [activeImage])
 
 
-  const setColormap = useCallback((colormap)=>{
-    console.log(colormap)
-    console.log(nv.volumes.length)
-    console.log(activeImage)
+  const updateColormap = useCallback((colormap)=>{
     nv.volumes[activeImage].colormap = colormap;
     nv.updateGLVolume();
+  }, [activeImage])
+
+  const setCalMinMax = useCallback((min, max)=>{
+    nv.volumes[activeImage].cal_min = min;
+    nv.volumes[activeImage].cal_max = max;
+    nv.updateGLVolume();
+    setMin(min)
+    setMax(max)
   }, [activeImage])
 
   async function addVolume(path, commsInfo){
@@ -113,17 +191,34 @@ function App() {
         index: index,
         id: volume.id,
         color: volume.colormap,
-        visible: volume.opacity > 0,
         active: index === activeImage
       }
     })
     console.log(newImages)
-    setImagesString(JSON.stringify(newImages))
     setImages(newImages)
   }
 
+  const handleRemove = useCallback((index) => {
+    let vol = nv.volumes[index]
+    nv.removeVolume(vol)
+    let volumes = nv.volumes
+    let newImages = volumes.map((volume, index) => {
+      return {
+        url: volume.url,
+        name: volume.name,
+        index: index,
+        id: volume.id,
+        color: volume.colormap,
+        active: index === activeImage
+      }
+    })
+    setActiveImage(0)
+    setImages(newImages)
+  }, [])
+
 
   return (
+    <NV.Provider value={_nv}>
       <AppContainer gap={0}>
         <CssBaseline />
         <Sidebar>
@@ -137,9 +232,9 @@ function App() {
                   name={image.name}
                   active={image.active}
                   index={index}
-                  visible={image.visible}
                   onSetActive={toggleActive}
                   onSetVisibility={setVisibility}
+                  onRemove={handleRemove}
                   >
                 </FileItem>
               )
@@ -150,12 +245,21 @@ function App() {
             {/* colormap select */}
             <ColormapSelect 
               colormaps={colormaps}
-              onSetColormap={setColormap}
+              onSetColormap={updateColormap}
+              colormap={colormap}
               />
             {/* min max input */}
-            <MinMaxInput />
+            <MinMaxInput 
+              calMin={calMin}
+              calMax={calMax}
+              min={min}
+              max={max}
+              onSetMinMax={setCalMinMax} />
             {/* opacity slider */}
-            <OpacitySlider />
+            <OpacitySlider
+              opacity={opacity}
+              onSetOpacity={updateOpacity}
+             />
           </ImageTools>
           {/* SceneTools */}
           {/* <SceneTools>
@@ -165,6 +269,7 @@ function App() {
 
         </NiiVue>
       </AppContainer>
+    </NV.Provider>
   )
 }
 

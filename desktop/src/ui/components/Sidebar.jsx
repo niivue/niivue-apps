@@ -7,15 +7,13 @@ export function Sidebar({ children, asColumn = true, ...props}) {
           display: 'flex',
           flexDirection: asColumn ? 'column' : 'row',
           alignItems: 'flex-start',
-          // justifyContent: 'left',
           height: '100%',
           minHeight: '100%',
           minWidth: '30%',
           backgroundColor: 'white',
-          // padding: '12px',
-          // margin: '12px',
           padding: '8px',
           overflowY: 'scroll',
+          overflowX: 'hidden',
           gap: '8px',
           ...props
         }}
