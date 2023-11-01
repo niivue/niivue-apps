@@ -54,7 +54,7 @@ export function MinMaxInput({
                 helperText="double click to reset"
                 type="number"
                 // value should be set to 3 decimal places
-                value={min.toFixed(3)}
+                value={min}
                 inputProps={{
                     min:calMin,
                     max:calMax,
@@ -73,7 +73,7 @@ export function MinMaxInput({
                 label="Max"
                 helperText="double click to reset"
                 type="number"
-                value={max.toFixed(3)}
+                value={max}
                 inputProps={{
                     min:calMin,
                     max:calMax,
