@@ -3,6 +3,12 @@ const path = require('path');
 const { fork } = require("child_process");
 const {devPorts} = require('./devPorts');
 const {events} = require('./events');
+const parseArgs = require('minimist');
+const args = parseArgs(process.argv.slice(2),
+  {
+    boolean: ['dev']
+  }
+);
 
 /**
  * the filters for the volume file dialog
@@ -121,11 +127,11 @@ fileServer.on("message", (message) => {
  * @returns {boolean} True if the application is running in development mode, false otherwise.
  */
 function isDev() {
-  // process.argv is an array of the command line arguments
+  // process is an array of the command line arguments
   // the first two are the path to the node executable and the path to the script being run
   // the third is the first argument passed to the app
   // if it's "--dev", we're in development mode
-  return process.argv[2] === '--dev';
+  return args['dev']; //process.argv[2] === '--dev';
 }
 
 /**
@@ -207,12 +213,31 @@ function createWindow(guiName="niivue") {
   }
 };
 
+async function loadCliVolumes() {
+  let cliImages = args._;
+  if (cliImages.length > 0) {
+    // wait for the main window to finish loading before sending the loadVolumes message
+    // or else the message will be lost
+    mainWindow.webContents.on('did-finish-load', async () => {
+      // if passing in cliImages to openFileDialog, we don't actually show the 
+      // dialog, we just return the cliImages with the same object formatting as the dialog
+      let result = await events.openFileDialog(filters=nvVolumeFilters, cliImages=cliImages);
+      mainWindow.webContents.send('loadVolumes', result.filePaths);
+    })
+  }
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', ()=>{
+app.on('ready', async ()=>{
+  // register event handlers
   registerIpcListeners();
+  // create the main window
   createWindow();
+  // load cli volumes
+  loadCliVolumes();
+  
 });
 
 // Quit when all windows are closed

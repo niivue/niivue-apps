@@ -26,9 +26,15 @@ async function onGetCommsInfo() {
  * @see https://www.electronjs.org/docs/latest/api/dialog#dialogshowopendialogbrowserwindow-options
  * @returns {Promise<Object>} A promise that resolves to an object with, cancelled, filePaths, and bookmarks properties.
  */
-async function onFileDialog(filters=[]) {
-    const { dialog } = require('electron')
-    const result = await dialog.showOpenDialog({filters:filters, properties: ['openFile', 'multiSelections'] })
+async function onFileDialog(filters=[], cliImages=[]) {
+    let result = []
+    if (cliImages.length === 0) {
+        const { dialog } = require('electron')
+        result = await dialog.showOpenDialog({filters:filters, properties: ['openFile', 'multiSelections'] })
+    }
+    else {
+        result = {canceled: false, filePaths: cliImages}
+    }
     return result
 }
 
