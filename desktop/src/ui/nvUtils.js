@@ -108,6 +108,12 @@ nvUtils.onSetView = function (callback) {
   }
 };
 
+nvUtils.onCloseAllVolumes = function (callback) {
+  if (isFunction(NIIVUE.onCloseAllVolumes)) {
+    NIIVUE.onCloseAllVolumes(callback);
+  }
+}
+
 nvUtils.onSetDragMode = function (callback) {
   if (isFunction(NIIVUE.onSetDragMode)) {
     NIIVUE.onSetDragMode(callback);

@@ -32,6 +32,10 @@ function App() {
     console.log('image loaded', volume)
     handleDrop()
   }
+  nv.onLocationChange = (locationData)=> {
+    // set the window title to locationData.string
+    document.title = locationData.string
+  }
   
   // get the list of colormap names
   const colormapNames = nv.colormaps(true) // sorted by name
@@ -71,6 +75,25 @@ function App() {
           await addVolume(img, info)
         })
       })
+
+      nvUtils.onCloseAllVolumes(() => {
+        let volumes = nv.volumes
+        // loop over all volumes from the end of the array to the beginning
+        // this is because when a volume is removed, the array is reindexed
+        // so if you remove the first volume, the second volume becomes the first
+        // and the second volume is never removed
+        for(let i = volumes.length - 1; i >= 0; i--){
+          nv.removeVolumeByIndex(i)
+        }
+        setImages([])
+        // update active image, min, max, opacity
+        setActiveImage(0)
+        setMin(0)
+        setMax(0)
+        setOpacity(1)
+        setCalMax(0)
+        setCalMin(0)
+      });
       // set the callback for when the view needs updating
       nvUtils.onSetView((view) => {
         // clear the mosaic string

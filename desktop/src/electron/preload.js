@@ -16,7 +16,8 @@ contextBridge.exposeInMainWorld('NIIVUE', {
   onSetFrame: onSetFrame,
   onSetColormaps: onSetColormaps,
   onSetDragMode: onSetDragMode,
-  onSetViewSelected: onSetViewSelected
+  onSetViewSelected: onSetViewSelected,
+  onCloseAllVolumes: onCloseAllVolumes,
 })
 
 async function onLoadVolumes(callback) {
@@ -44,6 +45,12 @@ async function onSetView(callback) {
   ipcRenderer.on('setView', (event, view) => {
     console.log(view)
     callback(view)
+  })
+}
+
+async function onCloseAllVolumes(callback) {
+  ipcRenderer.on('closeAllVolumes', () => {
+    callback()
   })
 }
 
