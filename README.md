@@ -1,4 +1,4 @@
-# [WIP] NiiVue Apps
+# NiiVue Apps
 
 This repo contains NiiVue Desktop and Mobile apps. Each app incorporates the NiiVue library and exposes features of the library in a user-friendly way.
 
@@ -24,7 +24,7 @@ npm run dev
 
 Build the desktop app
 ```
-npm run build
+npm run make
 ```
 
 ### Prerequisites
