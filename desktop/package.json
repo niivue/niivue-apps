@@ -1,7 +1,7 @@
 {
   "name": "niivue-desktop",
   "productName": "NiiVue",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A medical image viewer with a focus on neuroimaging",
   "main": "src/electron/index.js",
   "scripts": {
