@@ -28,6 +28,10 @@ const sliceTypes = {
 function App() {
   // create a new Niivue object
   const nv = useContext(NV)
+  nv.onImageLoaded = (volume) => {
+    console.log('image loaded', volume)
+    handleDrop()
+  }
   
   // get the list of colormap names
   const colormapNames = nv.colormaps(true) // sorted by name
@@ -196,6 +200,22 @@ function App() {
     })
     console.log(newImages)
     setImages(newImages)
+  }
+
+  function handleDrop(){
+    let volumes = nv.volumes
+    let newImages = volumes.map((volume, index) => {
+      return {
+        url: volume.url,
+        name: volume.name,
+        index: index,
+        id: volume.id,
+        color: volume.colormap,
+        active: index === activeImage
+      }
+    })
+    console.log(newImages)
+    setImages(newImages) 
   }
 
   const handleRemove = useCallback((index) => {
