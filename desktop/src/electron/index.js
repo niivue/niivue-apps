@@ -373,6 +373,10 @@ async function onSetViewClick(view) {
   mainWindow.webContents.send('setView', view);
 }
 
+async function onCloseAllVolumesClick() {
+  mainWindow.webContents.send('closeAllVolumes');
+}
+
 // create an application menu
 let menu = [
   // add file menu with load volumes option
@@ -385,6 +389,14 @@ let menu = [
         id: 'loadVolumes',
         click: async () => {
           await onLoadVolumesClick();
+        }
+      },
+      // close all volumes
+      {
+        label: 'Close all volumes',
+        id: 'closeAllVolumes',
+        click: async () => {
+          await onCloseAllVolumesClick();
         }
       },
       // load surfaces
