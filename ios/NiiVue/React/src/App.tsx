@@ -74,8 +74,6 @@ function App() {
   }
 
   function handleRedClick() {
-    nv.drawFillOverwrites = true
-    nv.createEmptyDrawing()
     nv.setDrawingEnabled(true)
     nv.setPenValue(1, isFilled)
   }
