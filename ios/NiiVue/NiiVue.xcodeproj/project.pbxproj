@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3485664D2B5426A4008EF4DD /* dist in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3485664C2B5426A4008EF4DD /* dist */; };
+		3487D3492BC85E5B007C6D7C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3487D3482BC85E5B007C6D7C /* ContentView.swift */; };
 		34CD17F62B45C5400015EF4C /* NiiVueApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD17F52B45C5400015EF4C /* NiiVueApp.swift */; };
-		34CD17F82B45C5400015EF4C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD17F72B45C5400015EF4C /* ContentView.swift */; };
 		34CD17FA2B45C5410015EF4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34CD17F92B45C5410015EF4C /* Assets.xcassets */; };
 		34CD17FD2B45C5410015EF4C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34CD17FC2B45C5410015EF4C /* Preview Assets.xcassets */; };
 		34CD18072B45C5420015EF4C /* NiiVueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CD18062B45C5420015EF4C /* NiiVueTests.swift */; };
@@ -50,9 +50,9 @@
 /* Begin PBXFileReference section */
 		348566462B51C95C008EF4DD /* dist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dist; path = React/dist; sourceTree = SOURCE_ROOT; };
 		3485664C2B5426A4008EF4DD /* dist */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dist; path = React/dist; sourceTree = "<group>"; };
+		3487D3482BC85E5B007C6D7C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		34CD17F22B45C5400015EF4C /* NiiVue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NiiVue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		34CD17F52B45C5400015EF4C /* NiiVueApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiiVueApp.swift; sourceTree = "<group>"; };
-		34CD17F72B45C5400015EF4C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		34CD17F92B45C5410015EF4C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		34CD17FC2B45C5410015EF4C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		34CD18022B45C5420015EF4C /* NiiVueTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NiiVueTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,7 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				34CD17F52B45C5400015EF4C /* NiiVueApp.swift */,
-				34CD17F72B45C5400015EF4C /* ContentView.swift */,
+				3487D3482BC85E5B007C6D7C /* ContentView.swift */,
 				34CD17F92B45C5410015EF4C /* Assets.xcassets */,
 				34CD17FB2B45C5410015EF4C /* Preview Content */,
 			);
@@ -297,8 +297,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34CD17F82B45C5400015EF4C /* ContentView.swift in Sources */,
 				34CD17F62B45C5400015EF4C /* NiiVueApp.swift in Sources */,
+				3487D3492BC85E5B007C6D7C /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,7 +477,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -509,7 +509,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

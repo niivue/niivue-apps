@@ -1,5 +1,5 @@
 import React from 'react'
-import { Niivue, SLICE_TYPE } from '@niivue/niivue';
+import { Niivue, SLICE_TYPE, NVImage } from '@niivue/niivue';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -25,14 +25,26 @@ import ViewModeIcon from '@mui/icons-material/GridView'; // view mode speed dial
 // import SaveDrawingIcon from '@mui/icons-material/SaveAlt'; // download drawing (save)
 // import ScreenshotIcon from '@mui/icons-material/Wallpaper'; // screenshot
 import './App.css'
-// import { red } from '@mui/material/colors';
 
-// const nv = new Niivue();
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    loadBase64Image: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    testFunction: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    saveDrawing: any
+  }
+}
 
 function App() {
   // canvas ref
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const nvRef = React.useRef<Niivue>(new Niivue());
+  const nvRef = React.useRef<Niivue>(new Niivue(
+    {
+      logLevel: 'debug'
+    }
+  ));
   const nv = nvRef.current;
   const backgroundColor = 'black'
 
@@ -173,15 +185,36 @@ function App() {
   ];
 
   const setup = async () => {
-    // @ts-ignore
+    if (!canvasRef.current) {
+      return;
+    }
     await nv.attachToCanvas(canvasRef.current);
     await nv.loadVolumes([
       {url: 'https://niivue.github.io/niivue-demo-images/chris_t2.nii.gz'},
     ])
   };
 
+  async function loadBase64Image(base64: string) {
+    const nvimage = NVImage.loadFromBase64({base64:base64, name:'image.nii.gz'})
+    nv.closeDrawing()
+    nv.volumes = []
+    nv.updateGLVolume()
+    nv.addVolume(nvimage)
+  }
+
+  function testFunction() {
+    nv.setCrosshairColor([0,1,0,0.5])
+  }
+
+  function saveDrawing() {
+    nv.saveImage({ filename: 'downloaded_drawing.nii.gz', isSaveDrawing: true, volumeByIndex: 0 })
+  }
+
   React.useEffect(() => {
     setup();
+    window.loadBase64Image = loadBase64Image 
+    window.testFunction = testFunction
+    window.saveDrawing = saveDrawing
   }, []);
 
   return (
@@ -223,7 +256,7 @@ function App() {
           flexDirection: 'column',
           height: '100%',
           width: '72px',
-          backgroundColor: backgroundColor
+          backgroundColor: backgroundColor,
         }}
       >
         {/* speed dial bottom */}
@@ -231,7 +264,7 @@ function App() {
           sx={{
             position: 'absolute',
             bottom: 16,
-            right: 8
+            right: 14
           }}
           FabProps={{
             size: 'small',
@@ -270,7 +303,7 @@ function App() {
           sx={{
             position: 'absolute',
             bottom: 84,
-            right: 8
+            right: 14
           }}
           FabProps={{
             size: 'small',
@@ -316,7 +349,7 @@ function App() {
           }}
           ariaLabel="draw modes"
           icon={<PencilIcon/>}
-          direction="left" // open left
+          // direction="left" // open left
         >
         {drawActions.map((action) => (
           <SpeedDialAction
