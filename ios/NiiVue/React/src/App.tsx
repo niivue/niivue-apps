@@ -1,39 +1,37 @@
 import React from 'react'
-import { Niivue, SLICE_TYPE, NVImage } from '@niivue/niivue';
+import { Niivue, NVImage } from '@niivue/niivue';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import SpeedDial from '@mui/material/SpeedDial';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
-// drag (cursor) icons
 import DragModeIcon from '@mui/icons-material/AdsClick'; // speed dial icon
-import MeasureIcon from '@mui/icons-material/Straighten'; // measure
-import ZoomPanIcon from '@mui/icons-material/ZoomIn'; // pan/zoom
-import ContrastIcon from '@mui/icons-material/Contrast'; // contrast (default)
-// draw tools icons
-import PencilIcon from '@mui/icons-material/Create'; // pencil icon for speed dial
-import ColorCircleIcon from '@mui/icons-material/Circle'; // circle icon for pencil color
-import EraserIcon from '@mui/icons-material/PanoramaFishEye'; // open circle for eraser
-import FillPenIcon from '@mui/icons-material/FormatColorFill'; // fill icon
-import OpacityIcon from '@mui/icons-material/Opacity'; // opacity icon
-// view mode tools icons
 import ViewModeIcon from '@mui/icons-material/GridView'; // view mode speed dial icon
-// use text for axial, sagittal, coronal, and 3d
-// use checkbox for toggle colorbar, radiological, world space, smooth
-// saving and sharing icons
-// import ShareIcon from '@mui/icons-material/Share'; // speed dial icon for saving and sharing
-// import SaveDrawingIcon from '@mui/icons-material/SaveAlt'; // download drawing (save)
-// import ScreenshotIcon from '@mui/icons-material/Wallpaper'; // screenshot
 import './App.css'
 
 declare global {
   interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    loadBase64Image: any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    testFunction: any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    saveDrawing: any
+    loadBase64Image: (base64: string) => void,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setCrosshairColor: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    saveDrawing: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setSliceType: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    set3dCrosshairVisible: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setLayout: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setDragMode: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setPenValue: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    set2dCrosshairVisible: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setCornerText: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setOrientationCube: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    setRadiological: Function
   }
 }
 
@@ -48,153 +46,65 @@ function App() {
   const nv = nvRef.current;
   const backgroundColor = 'black'
 
-  const [isFilled, setIsFilled] = React.useState(true)
-  const [drawingOpacity, setDrawingOpacity] = React.useState(1)
-
-  function handleAxialClick() {
-    nv.setSliceType(SLICE_TYPE.AXIAL)
-  }
-
-  function handleCoronalClick() {
-    nv.setSliceType(SLICE_TYPE.CORONAL)
-  }
-
-  function handleSagittalClick() {
-    nv.setSliceType(SLICE_TYPE.SAGITTAL)
-  }
-
-  function handle3DClick() {
-    nv.setSliceType(SLICE_TYPE.RENDER)
-  }
-
-  function handleMultiplanarClick() {
+  function setSliceType(sliceType: number) {
     nv.opts.multiplanarForceRender = true
     nv.setMultiplanarLayout(2) // 2x2
-    nv.setSliceType(SLICE_TYPE.MULTIPLANAR)
+    nv.setSliceType(sliceType)
   }
 
-  function handleDragModeMeasure() {
-    nv.opts.dragMode = nv.dragModes.measurement
+  function setLayout(layout: number) {
+    nv.opts.multiplanarForceRender = true
+    nv.setMultiplanarLayout(layout)
   }
 
-  function handleDragModeZoomPan() {
-    nv.opts.dragMode = nv.dragModes.pan
+  function set3dCrosshairVisible(visible: boolean) {
+    nv.opts.show3Dcrosshair = visible
+    nv.updateGLVolume();
+    nv.drawScene();
   }
 
-  function handleDragModeContrast() {
-    nv.opts.dragMode = nv.dragModes.contrast
+  function setPenValue(value: number, isFilled: boolean, drawingEnabled: boolean = true) {
+    nv.setDrawingEnabled(drawingEnabled)
+    nv.setPenValue(value, isFilled)
   }
 
-  function handleRedClick() {
-    nv.setDrawingEnabled(true)
-    nv.setPenValue(1, isFilled)
+  function setDragMode(dragMode: number) {
+    nv.opts.dragMode = dragMode
   }
 
-  function handleGreenClick() {
-    nv.setDrawingEnabled(true)
-    nv.setPenValue(2, isFilled)
+  function set2dCrosshairVisible(visible: boolean) {
+    nv.opts.crosshairWidth = visible ? 1 : 0
+    nv.updateGLVolume();
+    nv.drawScene();
   }
 
-  function handleBlueClick() {
-    nv.setDrawingEnabled(true)
-    nv.setPenValue(3, isFilled)
+  function setCornerText(isCorners: boolean) {
+    nv.setCornerOrientationText(isCorners)
   }
 
-  function handleYellowClick() {
-    nv.setDrawingEnabled(true)
-    nv.setPenValue(4, isFilled)
+  function setOrientationCube(visible: boolean) {
+    nv.opts.isOrientCube = visible
+    nv.updateGLVolume();
+    nv.drawScene();
   }
 
-  function handleCyanClick() {
-    nv.setDrawingEnabled(true)
-    nv.setPenValue(5, isFilled)
+  function setRadiological(isRadiological: boolean) {
+    nv.setRadiologicalConvention(isRadiological)
   }
-
-  function handlePurpleClick() {
-    nv.setDrawingEnabled(true)
-    nv.setPenValue(6, isFilled)
-  }
-
-  function handleEraserClick() {
-    nv.setDrawingEnabled(true)
-    nv.setPenValue(0, isFilled)
-  }
-
-  function handleDrawingOffClick() {
-    nv.setDrawingEnabled(false)
-  }
-
-  function handleDrawOpacityClick() {
-    // toggle draw opacity between 0.5 and 1
-    if (drawingOpacity === 1) {
-      setDrawingOpacity(0.5)
-    } else {
-      setDrawingOpacity(1)
-    }
-  }
-
-  function handleFillClick() {
-    setIsFilled(!isFilled)
-  }
-
-  React.useEffect(() => {
-    nv.setPenValue(nv.opts.penValue, isFilled)
-  }, [isFilled])
-
-  React.useEffect(() => {
-    // nv.setDrawOpacity(drawingOpacity)
-    nv.drawOpacity = drawingOpacity
-    console.log('drawing opacity: ', drawingOpacity)
-  }, [drawingOpacity])
-
-  const viewModeActions = [
-    { icon: null, name: 'axial', action: handleAxialClick },
-    { icon: null, name: 'coronal', action: handleCoronalClick },
-    { icon: null, name: 'sagittal', action: handleSagittalClick },
-    { icon: null, name: 'grid', action: handleMultiplanarClick },
-    { icon: null, name: '3D', action: handle3DClick }
-  ];
-
-  const dragModeActions = [
-    { icon: <MeasureIcon/>, name: 'measure', action: handleDragModeMeasure },
-    { icon: <ZoomPanIcon/>, name: 'zoom/pan', action: handleDragModeZoomPan },
-    { icon: <ContrastIcon/>, name: 'contrast', action: handleDragModeContrast }
-  ];
-
-  const drawActions = [
-    // off
-    { icon: null, name: 'off', action: handleDrawingOffClick },
-    // set pen value to red
-    { icon: <ColorCircleIcon sx={{color: 'red'}}/>, name: 'red', action: handleRedClick},
-    // green pen
-    { icon: <ColorCircleIcon sx={{color: 'green'}}/>, name: 'green', action: handleGreenClick },
-    // blue pen
-    { icon: <ColorCircleIcon sx={{color: 'blue'}}/>, name: 'blue', action: handleBlueClick },
-    // yellow pen
-    { icon: <ColorCircleIcon sx={{color: 'yellow'}}/>, name: 'yellow', action: handleYellowClick },
-    // cyan pen
-    { icon: <ColorCircleIcon sx={{color: 'cyan'}}/>, name: 'cyan', action: handleCyanClick },
-    // purple
-    { icon: <ColorCircleIcon sx={{color: 'purple'}}/>, name: 'purple', action: handlePurpleClick },
-    // eraser
-    { icon: <EraserIcon sx={{color: 'black'}}/>, name: 'eraser', action: handleEraserClick },
-    // fill mode
-    { icon: <FillPenIcon/>, name: 'fill', action: handleFillClick },
-    // draw opacity
-    { icon: <OpacityIcon/>, name: 'opacity', action: handleDrawOpacityClick }
-  ];
 
   const setup = async () => {
     if (!canvasRef.current) {
       return;
     }
     await nv.attachToCanvas(canvasRef.current);
-    await nv.loadVolumes([
-      {url: 'https://niivue.github.io/niivue-demo-images/chris_t2.nii.gz'},
-    ])
+    // await nv.loadVolumes([
+    //   {url: 'https://niivue.github.io/niivue-demo-images/chris_t2.nii.gz'},
+    // ])
   };
 
   async function loadBase64Image(base64: string) {
+    // name is required for the image to be loaded (file type inferred correctly),
+    // but it is not used elsewhere
     const nvimage = NVImage.loadFromBase64({base64:base64, name:'image.nii.gz'})
     nv.closeDrawing()
     nv.volumes = []
@@ -202,19 +112,45 @@ function App() {
     nv.addVolume(nvimage)
   }
 
-  function testFunction() {
+  function setCrosshairColor() {
     nv.setCrosshairColor([0,1,0,0.5])
   }
 
   function saveDrawing() {
-    nv.saveImage({ filename: 'downloaded_drawing.nii.gz', isSaveDrawing: true, volumeByIndex: 0 })
+    function uint8ArrayToBase64(buffer: Uint8Array) {
+      let binary = '';
+      // const bytes = new Uint8Array(buffer);
+      const bytes = buffer;
+      const len = bytes.byteLength;
+      
+      for (let i = 0; i < len; i++) {
+          binary += String.fromCharCode(bytes[i]);
+      }
+      
+      return btoa(binary);
+  }
+    const img = nv.saveImage({ filename: 'niivue_drawing.nii.gz', isSaveDrawing: true, volumeByIndex: 0 })
+    // if img is a Uint8Array, convert to base64
+    if (img instanceof Uint8Array){
+      return uint8ArrayToBase64(img)
+    }
+    return ""
   }
 
   React.useEffect(() => {
     setup();
     window.loadBase64Image = loadBase64Image 
-    window.testFunction = testFunction
-    window.saveDrawing = saveDrawing
+    window.setCrosshairColor = setCrosshairColor
+    window.saveDrawing = saveDrawing,
+    window.setSliceType = setSliceType,
+    window.setLayout = setLayout,
+    window.set3dCrosshairVisible = set3dCrosshairVisible,
+    window.setDragMode = setDragMode,
+    window.setPenValue = setPenValue,
+    window.set2dCrosshairVisible = set2dCrosshairVisible,
+    window.setCornerText = setCornerText,
+    window.setOrientationCube = setOrientationCube,
+    window.setRadiological = setRadiological
   }, []);
 
   return (
@@ -248,11 +184,12 @@ function App() {
         <canvas ref={canvasRef} className='no-focus' />
       </Box>
       {/* vertical tool buttons */}
+      {/* THIS IS HIDDEN IN FAVOUR OF iOS UI ELEMENTS */}
       <Box
         style={{
           margin: '0',
           padding: '0',
-          display: 'flex',
+          display: 'none', // HIDDEN
           flexDirection: 'column',
           height: '100%',
           width: '72px',
@@ -273,7 +210,7 @@ function App() {
           icon={<ViewModeIcon/>}
           direction="left" // open left
         >
-        {viewModeActions.map((action) => (
+        {/* {viewModeActions.map((action) => (
           <SpeedDialAction
             key={action.name}
             FabProps={{'variant': 'extended'}}
@@ -295,7 +232,7 @@ function App() {
             }
             tooltipTitle={action.name}
           />
-        ))}
+        ))} */}
       </SpeedDial>
 
       {/* speed dial drag modes */}
@@ -312,7 +249,7 @@ function App() {
           icon={<DragModeIcon/>}
           direction="left" // open left
         >
-        {dragModeActions.map((action) => (
+        {/* {dragModeActions.map((action) => (
           <SpeedDialAction
             key={action.name}
             FabProps={{'variant': 'extended'}}
@@ -327,14 +264,12 @@ function App() {
                 onClick={action.action}
               >
                 {action.icon}
-                {/* <Typography variant='body1' textTransform={'none'}>
-                  {action.name}
-                </Typography> */}
+
               </Box>
             }
             tooltipTitle={action.name}
           />
-        ))}
+        ))} */}
       </SpeedDial>
 
       {/* speed dial draw modes */}
@@ -348,10 +283,10 @@ function App() {
             size: 'small',
           }}
           ariaLabel="draw modes"
-          icon={<PencilIcon/>}
+          // icon={<PencilIcon/>}
           // direction="left" // open left
         >
-        {drawActions.map((action) => (
+        {/* {drawActions.map((action) => (
           <SpeedDialAction
             key={action.name}
             FabProps={{'variant': 'extended'}}
@@ -366,16 +301,12 @@ function App() {
                 onClick={action.action}
               >
                 {action.icon !== null ? action.icon : <Typography variant='body1' textTransform={'none'}>{action.name}</Typography>}
-                {/* <Typography variant='body1' textTransform={'none'}>
-                  {action.name}
-                </Typography> */}
               </Box>
             }
             tooltipTitle={action.name}
           />
-        ))}
+        ))} */}
       </SpeedDial>
-      
       </Box>
     </Container>   
   )
