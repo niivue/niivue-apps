@@ -31,7 +31,9 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/ban-types
     setOrientationCube: Function,
     // eslint-disable-next-line @typescript-eslint/ban-types
-    setRadiological: Function
+    setRadiological: Function,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    moveCrosshairInVox: Function
   }
 }
 
@@ -92,6 +94,10 @@ function App() {
     nv.setRadiologicalConvention(isRadiological)
   }
 
+  function moveCrosshairInVox(x: number, y: number, z: number) {
+    nv.moveCrosshairInVox(x, y, z)
+  }
+
   const setup = async () => {
     if (!canvasRef.current) {
       return;
@@ -150,7 +156,8 @@ function App() {
     window.set2dCrosshairVisible = set2dCrosshairVisible,
     window.setCornerText = setCornerText,
     window.setOrientationCube = setOrientationCube,
-    window.setRadiological = setRadiological
+    window.setRadiological = setRadiological,
+    window.moveCrosshairInVox = moveCrosshairInVox
   }, []);
 
   return (

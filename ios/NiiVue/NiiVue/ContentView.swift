@@ -218,6 +218,15 @@ class WebViewManager: ObservableObject {
             }
         }
     }
+    
+    // move slice by one vox in any plane
+    func moveCrosshairInVox(_ x: Int, _ y: Int, _ z: Int) {
+        webView.evaluateJavaScript("window.moveCrosshairInVox(\(x),\(y),\(z))") {(result, error) in
+            if error == nil {
+                print(result ?? "")
+            }
+        }
+    }
 }
 
 struct WebView: UIViewRepresentable {
@@ -253,6 +262,9 @@ struct ContentView: View {
     @State private var radiological = false // use radiological convention or not in Niivue
     @State private var saveFileAlert = false
     @State private var showingSaveAlert = false
+    @State private var incrementText = ""
+    @State private var decrementText = ""
+    @State private var sliceTypeText = ""
     
     enum SliceTypes: Int, CaseIterable, Identifiable {
         case Axial = 0
@@ -309,6 +321,30 @@ struct ContentView: View {
         }
     }
     
+    func incrementSlice() {
+        if (sliceType == SliceTypes.Axial.rawValue) {
+            webViewManager.moveCrosshairInVox(0, 0, 1)
+        } else if (sliceType == SliceTypes.Coronal.rawValue) {
+            webViewManager.moveCrosshairInVox(0, 1, 0)
+        } else if (sliceType == SliceTypes.Sagittal.rawValue) {
+            webViewManager.moveCrosshairInVox(1, 0, 0)
+        }
+    }
+    
+    func decrementSlice() {
+        if (sliceType == SliceTypes.Axial.rawValue) {
+            webViewManager.moveCrosshairInVox(0, 0, -1)
+        } else if (sliceType == SliceTypes.Coronal.rawValue) {
+            webViewManager.moveCrosshairInVox(0, -1, 0)
+        } else if (sliceType == SliceTypes.Sagittal.rawValue) {
+            webViewManager.moveCrosshairInVox(-1, 0, 0)
+        }
+    }
+    
+    func rotateSliceType() {
+        sliceType = (sliceType + 1) % 3
+    }
+    
     var body: some View {
         VStack {
             HStack {
@@ -335,8 +371,7 @@ struct ContentView: View {
                 // -------------------------------------------------------------
                 if let url = pickedDocumentURL {
                     Text("\(url.lastPathComponent)")
-                        .foregroundColor(.white)
-                        .padding()
+                        .foregroundStyle(.white)
                 }
                 // -------------------------------------------------------------
                 Spacer() // Pushes the button to the right, and text to the left
@@ -506,6 +541,56 @@ struct ContentView: View {
             .padding(.horizontal) // Adds some padding on the left and right
             .background(Color.black)
             // -------------------------------------------------------------
+            // show the drawing toolbar if drawing enabled and only showing axial, sagittal, or coronal slices
+            if (drawingEnabled && sliceType != SliceTypes.Multiplanar.rawValue && sliceType != SliceTypes.Render.rawValue) {
+                HStack {
+                    Button(action: {
+                        print("rotate slice type")
+                        rotateSliceType()
+                    })
+                    {
+                        let font = Font
+                            .system(size: 18)
+                            .monospaced()
+                        Text(sliceTypeText).bold().font(font)
+                    }
+                    .padding()
+                    Spacer()
+                    //-------------------------------------------------
+                    Text(decrementText)
+                    Button(action: {
+                        print("decrement slice")
+                        decrementSlice()
+                    })
+                    {
+                        Image(systemName: "minus.rectangle.fill")
+                            .padding([.bottom, .top, .trailing], 20)
+                            .foregroundColor(.white) // Ensure the "+" icon is visible on a black background
+                    }
+                    .buttonStyle(.borderless)
+                        .controlSize(.large)
+                    // --------------------------------------------------
+                    Text("Slice")
+                        .foregroundStyle(.white)
+                    
+                    //---------------------------------------------------
+                    Button(action: {
+                        print("increment slice")
+                        incrementSlice()
+                    })
+                    {
+                        Image(systemName: "plus.rectangle.fill")
+                            .padding([.bottom, .top, .leading], 20)
+                            .foregroundColor(.white) // Ensure the "+" icon is visible on a black background
+                    }
+                    .buttonStyle(.borderless)
+                        .controlSize(.large)
+                    Text(incrementText)
+                }
+                .padding(.horizontal) // Adds some padding on the left and right
+                .background(Color.black)
+            }
+            // -------------------------------------------------------------
             // show the webview
             WebView(manager: webViewManager)
                 .onAppear {
@@ -524,6 +609,19 @@ struct ContentView: View {
         .onChange(of: sliceType) { newValue in
             print("sliceType updated to: \(newValue)")
             webViewManager.setSliceType(sliceType: newValue)
+            if (newValue == SliceTypes.Axial.rawValue) {
+                incrementText = "S" // superior
+                decrementText = "I" // inferior
+                sliceTypeText = "A"
+            } else if (newValue == SliceTypes.Coronal.rawValue) {
+                incrementText = "A" // anterior
+                decrementText = "P" // posterior
+                sliceTypeText = "C"
+            } else if (newValue == SliceTypes.Sagittal.rawValue) {
+                incrementText = "R" // right
+                decrementText = "L" // left
+                sliceTypeText = "S"
+            }
         }
         .onChange(of: layout) { newValue in
             print("layout updated to: \(newValue)")
